@@ -339,43 +339,35 @@ fun SimulatorScreen(
                     .padding(innerPadding)
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(24.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(76.dp))
                 Text(
                     text = "Simulează vremea în timp real",
-                    fontSize = 28.sp,
+                    fontSize = 25.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
 
-                Text(
-                    text = "Ajustează atmosfera și vezi cum cerul prinde viață.",
-                    fontSize = 15.sp,
-                    color = Color.White.copy(alpha = 0.88f)
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(28.dp))
+                        .clip(RoundedCornerShape(22.dp))
                         .border(
                             width = 1.dp,
                             color = Color.White.copy(alpha = 0.35f),
-                            shape = RoundedCornerShape(28.dp)
+                            shape = RoundedCornerShape(22.dp)
                         )
                         .background(Color.White.copy(alpha = 0.18f))
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 22.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -388,7 +380,7 @@ fun SimulatorScreen(
                                 )
                                 Text(
                                     text = "Alege valorile atmosferice",
-                                    fontSize = 20.sp,
+                                    fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White
                                 )
@@ -396,7 +388,7 @@ fun SimulatorScreen(
 
                             Text(
                                 text = "Ajustează valorile pentru a simula diferite condiții meteo.",
-                                fontSize = 13.sp,
+                                fontSize = 11.sp,
                                 color = Color.White.copy(alpha = 0.84f)
                             )
                         }
@@ -412,6 +404,7 @@ fun SimulatorScreen(
                             value = "${temperature.toInt()}°C"
                         ) {
                             Slider(
+                                modifier = Modifier.height(28.dp),
                                 value = temperature,
                                 onValueChange = {
                                     temperature = it.roundToInt().toFloat()
@@ -427,6 +420,7 @@ fun SimulatorScreen(
                             value = "${humidity.toInt()}%"
                         ) {
                             Slider(
+                                modifier = Modifier.height(28.dp),
                                 value = humidity,
                                 onValueChange = { v ->
                                     humidity = (v / 10f).roundToInt() * 10f
@@ -455,7 +449,7 @@ fun SimulatorScreen(
                                         "Senzor activ"
                                     else
                                         "Mod manual",
-                                    fontSize = 13.sp,
+                                    fontSize = 11.sp,
                                     color = Color.White.copy(alpha = 0.84f)
                                 )
 
@@ -463,7 +457,7 @@ fun SimulatorScreen(
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Text(
                                             text = "LIVE",
-                                            fontSize = 12.sp,
+                                            fontSize = 11.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             color = Color.White.copy(alpha = 0.92f)
                                         )
@@ -476,9 +470,8 @@ fun SimulatorScreen(
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(2.dp))
-
                             Slider(
+                                modifier = Modifier.height(28.dp),
                                 value = pressure,
                                 onValueChange = { p ->
                                     pressure = p.roundToInt().toFloat()
@@ -492,13 +485,13 @@ fun SimulatorScreen(
                             if (isBarometerAvailable && trend != PressureTrend.UNKNOWN && trendHpaPerHour != null) {
                                 Text(
                                     text = "Trend: ${"%.1f".format(trendHpaPerHour)} hPa/oră • $trend",
-                                    fontSize = 12.sp,
+                                    fontSize = 10.sp,
                                     color = Color.White.copy(alpha = 0.84f)
                                 )
                             } else if (!isBarometerAvailable) {
                                 Text(
                                     text = "Barometru indisponibil. Folosește modul manual.",
-                                    fontSize = 12.sp,
+                                    fontSize = 10.sp,
                                     color = Color.White.copy(alpha = 0.84f)
                                 )
                             }
@@ -509,6 +502,7 @@ fun SimulatorScreen(
                             value = "${wind.toInt()} km/h"
                         ) {
                             Slider(
+                                modifier = Modifier.height(28.dp),
                                 value = wind,
                                 onValueChange = { w ->
                                     wind = (w / 10f).roundToInt() * 10f
@@ -524,6 +518,7 @@ fun SimulatorScreen(
                             value = "${cloudCoverage.toInt()}%"
                         ) {
                             Slider(
+                                modifier = Modifier.height(28.dp),
                                 value = cloudCoverage,
                                 onValueChange = { value ->
                                     cloudCoverage = (value / 20f).roundToInt() * 20f
@@ -536,7 +531,7 @@ fun SimulatorScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Box(
                     modifier = Modifier
@@ -734,15 +729,15 @@ fun WeatherSliderSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(22.dp))
+            .clip(RoundedCornerShape(18.dp))
             .background(Color.White.copy(alpha = 0.10f))
             .border(
                 width = 1.dp,
                 color = Color.White.copy(alpha = 0.18f),
-                shape = RoundedCornerShape(22.dp)
+                shape = RoundedCornerShape(18.dp)
             )
-            .padding(horizontal = 14.dp, vertical = 14.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -751,14 +746,14 @@ fun WeatherSliderSection(
         ) {
             Text(
                 text = label,
-                fontSize = 15.sp,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.White.copy(alpha = 0.95f)
             )
 
             Text(
                 text = value,
-                fontSize = 14.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.White
             )
@@ -767,6 +762,7 @@ fun WeatherSliderSection(
         content()
     }
 }
+
 
 @Composable
 fun AnimatedSky(
