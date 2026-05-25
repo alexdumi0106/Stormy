@@ -16,13 +16,31 @@ interface OpenMeteoApi {
 
         // Hourly forecast (scroll orizontal)
         @Query("hourly") hourly: String =
-            "temperature_2m,weather_code,is_day,cloud_cover,wind_speed_10m,relative_humidity_2m,pressure_msl",
+            "temperature_2m,weather_code,is_day,cloud_cover,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,pressure_msl,precipitation,rain",
 
         // Daily forecast
         @Query("daily") daily: String =
             "weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset",
 
         @Query("forecast_days") forecastDays: Int = 10,
+
+        @Query("timezone") timezone: String = "auto"
+    ): OpenMeteoResponse
+
+    @GET("v1/forecast")
+    suspend fun recentPastForecast(
+        @Query("latitude") lat: Double,
+        @Query("longitude") lon: Double,
+
+        @Query("hourly") hourly: String =
+            "temperature_2m,relative_humidity_2m,pressure_msl,cloud_cover,wind_speed_10m,wind_gusts_10m,precipitation,rain,weather_code,is_day",
+
+        @Query("daily") daily: String =
+            "weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset",
+
+        @Query("past_days") pastDays: Int,
+
+        @Query("forecast_days") forecastDays: Int = 1,
 
         @Query("timezone") timezone: String = "auto"
     ): OpenMeteoResponse
@@ -36,7 +54,7 @@ interface OpenMeteoApi {
         @Query("end_date") endDate: String,
 
         @Query("hourly") hourly: String =
-            "temperature_2m,relative_humidity_2m,surface_pressure,cloud_cover,wind_speed_10m,rain,snowfall,precipitation,wind_gusts_10m,weather_code,is_day",
+            "temperature_2m,relative_humidity_2m,surface_pressure,cloud_cover,wind_speed_10m,wind_gusts_10m,precipitation,rain,weather_code,is_day",
 
         @Query("daily") daily: String =
             "weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset",

@@ -11,9 +11,11 @@ import com.example.weathersimulator.data.remote.weather.OpenMeteoResponse
 import javax.inject.Inject
 import java.time.YearMonth
 import java.time.LocalDate
+import com.example.weathersimulator.data.remote.weather.OpenMeteoArchiveApi
 
 class WeatherRepository @Inject constructor(
     private val api: OpenMeteoApi,
+    private val archiveApi: OpenMeteoArchiveApi,
     private val csvReader: WeatherCsvReader
 ) {
     private val cachedHistoricalDatasets = mutableMapOf<String, WeatherCsvDataset>()
@@ -23,7 +25,8 @@ class WeatherRepository @Inject constructor(
         val name: String,
         val latitude: Double,
         val longitude: Double,
-        val csvFileName: String?
+        val csvFileName: String?,
+        val timezone: String = "auto"
     )
 
     val archiveCities = listOf(
@@ -31,14 +34,15 @@ class WeatherRepository @Inject constructor(
             name = "Timișoara",
             latitude = 45.7489,
             longitude = 21.2087,
-            csvFileName = "open-meteo-45.80N21.18E96m.csv"
+            csvFileName = "open-meteo-45.80N21.18E96m.csv",
+            timezone = "Europe/Bucharest"
         ),
-        ArchiveCity("București", 44.4268, 26.1025, null),
-        ArchiveCity("Cluj-Napoca", 46.7712, 23.6236, null),
-        ArchiveCity("Iași", 47.1585, 27.6014, null),
-        ArchiveCity("Craiova", 44.3302, 23.7949, null),
-        ArchiveCity("Constanța", 44.1598, 28.6348, null),
-        ArchiveCity("Brașov", 45.6427, 25.5887, null)
+        ArchiveCity("București", 44.4268, 26.1025, null, "Europe/Bucharest"),
+        ArchiveCity("Cluj-Napoca", 46.7712, 23.6236, null, "Europe/Bucharest"),
+        ArchiveCity("Iași", 47.1585, 27.6014, null, "Europe/Bucharest"),
+        ArchiveCity("Craiova", 44.3302, 23.7949, null, "Europe/Bucharest"),
+        ArchiveCity("Constanța", 44.1598, 28.6348, null, "Europe/Bucharest"),
+        ArchiveCity("Brașov", 45.6427, 25.5887, null, "Europe/Bucharest")
     )
 
     suspend fun getForecast(lat: Double, lon: Double): OpenMeteoResponse {
@@ -47,6 +51,21 @@ class WeatherRepository @Inject constructor(
 
     fun getArchiveCity(name: String): ArchiveCity {
         return archiveCities.firstOrNull { it.name == name } ?: archiveCities.first()
+    }
+
+    fun buildDynamicArchiveCity(
+        name: String,
+        latitude: Double,
+        longitude: Double,
+        timezone: String?
+    ): ArchiveCity {
+        return ArchiveCity(
+            name = name,
+            latitude = latitude,
+            longitude = longitude,
+            csvFileName = null,
+            timezone = timezone ?: "auto"
+        )
     }
 
     fun getHistoricalDataset(city: ArchiveCity): WeatherCsvDataset? {
@@ -92,6 +111,34 @@ class WeatherRepository @Inject constructor(
         return response
     }
 
+    suspend fun getHistoricalForecastForCity(
+        city: ArchiveCity,
+        monthKey: String,
+        source: String = "API"
+    ): OpenMeteoResponse {
+        val cacheKey = "${city.name}_${source}_$monthKey"
+
+        cachedHistoricalForecasts[cacheKey]?.let { return it }
+
+        val shouldUseCsv =
+            city.csvFileName != null &&
+                source == "CSV"
+
+        if (shouldUseCsv) {
+            val csvDataset = getHistoricalDataset(city)
+
+            if (csvDataset != null) {
+                val response = csvDataset.toOpenMeteoResponse()
+                cachedHistoricalForecasts[cacheKey] = response
+                return response
+            }
+        }
+
+        val response = getHistoricalForecastFromApi(city, monthKey)
+        cachedHistoricalForecasts[cacheKey] = response
+        return response
+    }
+
     private suspend fun getHistoricalForecastFromApi(
         city: ArchiveCity,
         monthKey: String
@@ -100,17 +147,94 @@ class WeatherRepository @Inject constructor(
 
         val startDate = yearMonth.atDay(1)
         val yesterday = LocalDate.now().minusDays(1)
+        val latestAvailableArchiveDate = LocalDate.now().minusDays(5)
 
-        val endDate = minOf(
+        val requestedEndDate = minOf(
             yearMonth.atEndOfMonth(),
             yesterday
         )
 
-        return api.archive(
-            lat = city.latitude,
-            lon = city.longitude,
-            startDate = startDate.toString(),
-            endDate = endDate.toString()
+        return if (requestedEndDate > latestAvailableArchiveDate) {
+            val pastDays = java.time.temporal.ChronoUnit.DAYS
+                .between(startDate, requestedEndDate)
+                .toInt()
+                .plus(1)
+                .coerceIn(1, 92)
+
+            api.recentPastForecast(
+                lat = city.latitude,
+                lon = city.longitude,
+                pastDays = pastDays,
+                timezone = city.timezone
+            )
+        } else {
+            getHistoricalForecastFromArchiveInChunks(
+                city = city,
+                startDate = startDate,
+                endDate = requestedEndDate
+            )
+        }
+    }
+
+    private suspend fun getHistoricalForecastFromArchiveInChunks(
+        city: ArchiveCity,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): OpenMeteoResponse {
+        val responses = mutableListOf<OpenMeteoResponse>()
+
+        var chunkStart = startDate
+
+        while (!chunkStart.isAfter(endDate)) {
+            val chunkEnd = minOf(chunkStart.plusDays(6), endDate)
+
+            val response = archiveApi.archive(
+                lat = city.latitude,
+                lon = city.longitude,
+                startDate = chunkStart.toString(),
+                endDate = chunkEnd.toString(),
+                timezone = city.timezone
+            )
+
+            responses.add(response)
+            chunkStart = chunkEnd.plusDays(1)
+        }
+
+        return mergeHistoricalResponses(responses)
+    }
+
+    private fun mergeHistoricalResponses(
+        responses: List<OpenMeteoResponse>
+    ): OpenMeteoResponse {
+        val first = responses.first()
+
+        return OpenMeteoResponse(
+            latitude = first.latitude,
+            longitude = first.longitude,
+            timezone = first.timezone,
+            current = first.current,
+            hourly = HourlyDto(
+                time = responses.flatMap { it.hourly?.time ?: emptyList() },
+                temperature = responses.flatMap { it.hourly?.temperature ?: emptyList() },
+                precipitation = responses.flatMap { it.hourly?.precipitation ?: emptyList() },
+                rain = responses.flatMap { it.hourly?.rain ?: emptyList() },
+                snowfall = responses.flatMap { it.hourly?.snowfall ?: emptyList() },
+                weatherCode = responses.flatMap { it.hourly?.weatherCode ?: emptyList() },
+                cloudCover = responses.flatMap { it.hourly?.cloudCover ?: emptyList() },
+                windSpeed = responses.flatMap { it.hourly?.windSpeed ?: emptyList() },
+                windGusts = responses.flatMap { it.hourly?.windGusts ?: emptyList() },
+                humidity = responses.flatMap { it.hourly?.humidity ?: emptyList() },
+                pressure = responses.flatMap { it.hourly?.pressure ?: emptyList() },
+                isDay = responses.flatMap { it.hourly?.isDay ?: emptyList() }
+            ),
+            daily = DailyDto(
+                time = responses.flatMap { it.daily?.time ?: emptyList() },
+                weatherCode = responses.flatMap { it.daily?.weatherCode ?: emptyList() },
+                tempMax = responses.flatMap { it.daily?.tempMax ?: emptyList() },
+                tempMin = responses.flatMap { it.daily?.tempMin ?: emptyList() },
+                sunrise = responses.flatMap { it.daily?.sunrise ?: emptyList() },
+                sunset = responses.flatMap { it.daily?.sunset ?: emptyList() }
+            )
         )
     }
 

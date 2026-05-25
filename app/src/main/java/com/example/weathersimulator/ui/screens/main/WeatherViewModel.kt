@@ -31,6 +31,15 @@ import java.time.ZonedDateTime
 import com.example.weathersimulator.domain.weather.WeatherAlertEvaluator
 import com.example.weathersimulator.notifications.WeatherNotifier
 import android.app.Application
+import com.example.weathersimulator.data.remote.weather.CurrentDto
+import com.example.weathersimulator.data.remote.weather.HourlyDto
+import kotlin.math.acos
+import kotlin.math.asin
+import kotlin.math.atan
+import kotlin.math.cos
+import kotlin.math.floor
+import kotlin.math.sin
+import kotlin.math.tan
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
@@ -97,7 +106,7 @@ class WeatherViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
 
             try {
-                val response = weatherRepository.getForecast(lat, lon)
+                val response = applyStormDetection(weatherRepository.getForecast(lat, lon))
                 lastFetchAtMs = System.currentTimeMillis()
                 lastFetchLat = lat
                 lastFetchLon = lon
@@ -161,7 +170,11 @@ class WeatherViewModel @Inject constructor(
                     )
                 }
 
-                if (finalSelectedMonth != null) {
+                val shouldAutoSelectMonth =
+                    city.csvFileName != null &&
+                        _state.value.selectedArchiveSource == "CSV"
+
+                if (shouldAutoSelectMonth && finalSelectedMonth != null) {
                     selectHistoryMonth(finalSelectedMonth)
                 }
             } catch (e: Exception) {
@@ -181,7 +194,14 @@ class WeatherViewModel @Inject constructor(
 
     private suspend fun preloadHistoricalData(monthKey: String): OpenMeteoResponse {
         val selectedCity = _state.value.selectedArchiveCity
-        val city = weatherRepository.getArchiveCity(selectedCity)
+
+        val city = weatherRepository.archiveCities.firstOrNull { it.name == selectedCity }
+            ?: weatherRepository.buildDynamicArchiveCity(
+                name = selectedCity,
+                latitude = _state.value.selectedArchiveLatitude,
+                longitude = _state.value.selectedArchiveLongitude,
+                timezone = _state.value.selectedArchiveTimezone
+            )
 
         val cacheStillValid =
             historicalCachedResponse != null &&
@@ -212,15 +232,20 @@ class WeatherViewModel @Inject constructor(
         }
 
         val response = withContext(Dispatchers.IO) {
-            weatherRepository.getHistoricalForecast(
-                cityName = selectedCity,
+            weatherRepository.getHistoricalForecastForCity(
+                city = city,
                 monthKey = monthKey,
                 source = _state.value.selectedArchiveSource
             )
         }
 
-        historicalCachedResponse = response
-        return response
+        val detectedResponse = applyStormDetection(response)
+
+        historicalTimezone = response.timezone ?: city.timezone
+        historicalCsvUtcOffsetSeconds = response.utcOffsetSeconds ?: historicalCsvUtcOffsetSeconds
+
+        historicalCachedResponse = detectedResponse
+        return detectedResponse
     }
 
     fun selectArchiveCity(cityName: String) {
@@ -244,7 +269,17 @@ class WeatherViewModel @Inject constructor(
             )
         }
 
-        loadHistorical()
+        val selectedCity = weatherRepository.getArchiveCity(cityName)
+
+        if (selectedCity.csvFileName != null && _state.value.selectedArchiveSource == "CSV") {
+            loadHistorical()
+        } else {
+            _state.update {
+                it.copy(
+                    availableHistoryMonths = buildAvailableHistoryMonths()
+                )
+            }
+        }
     }
 
     fun selectArchiveSource(source: String) {
@@ -256,7 +291,7 @@ class WeatherViewModel @Inject constructor(
                 selectedArchiveSource = source,
                 selectedHistoryMonth = null,
                 selectedHistoryDay = null,
-                availableHistoryMonths = emptyList(),
+                availableHistoryMonths = if (source == "API") buildAvailableHistoryMonths() else emptyList(),
                 availableHistoryDays = emptyList(),
                 historicalHourlyForecast = emptyList(),
                 historyMonthSummary = null,
@@ -266,7 +301,9 @@ class WeatherViewModel @Inject constructor(
             )
         }
 
-        loadHistorical()
+        if (source == "CSV") {
+            loadHistorical()
+        }
     }
 
     fun setHistoryMode(enabled: Boolean) {
@@ -416,8 +453,14 @@ class WeatherViewModel @Inject constructor(
 
         if (size == 0) return
 
+        val yesterday = LocalDate.now().minusDays(1)
+
         val monthRows = (0 until size)
-            .filter { hourly.time[it].startsWith(monthKey) }
+            .filter { index ->
+                val date = hourly.time[index].take(10)
+                date.startsWith(monthKey) &&
+                    (LocalDate.parse(date) <= yesterday)
+            }
 
         val days = monthRows
             .map { hourly.time[it].take(10) }
@@ -692,8 +735,20 @@ class WeatherViewModel @Inject constructor(
             daily?.sunset?.getOrNull(dailyIndex)
         } else null
 
-        val sunrise = (sunriseFromCsv ?: sunriseFromApi)?.let { normalizeHistoricalSolarTime(it) }
-        val sunset = (sunsetFromCsv ?: sunsetFromApi)?.let { normalizeHistoricalSolarTime(it) }
+        val calculatedSolarTimes = calculateHistoricalSunriseSunset(
+            dayKey = dayKey,
+            latitude = response.latitude,
+            longitude = response.longitude,
+            timezone = historicalTimezone
+        )
+
+        val sunrise = calculatedSolarTimes?.first
+            ?: sunriseFromCsv?.let { normalizeHistoricalSolarTime(it) }
+            ?: sunriseFromApi?.let { formatHour(it) }
+
+        val sunset = calculatedSolarTimes?.second
+            ?: sunsetFromCsv?.let { normalizeHistoricalSolarTime(it) }
+            ?: sunsetFromApi?.let { formatHour(it) }
 
         val fallbackWeatherCode = hourly.weatherCode[indexes.firstOrNull() ?: 0]
         val fallbackCloudCover = hourly.cloudCover[indexes.firstOrNull() ?: 0]
@@ -903,6 +958,161 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
+    private fun calculateHistoricalSunriseSunset(
+        dayKey: String,
+        latitude: Double,
+        longitude: Double,
+        timezone: String?
+    ): Pair<String, String>? {
+        if (latitude == 0.0 && longitude == 0.0) return null
+
+        return try {
+            val date = LocalDate.parse(dayKey)
+            val zoneId = ZoneId.of(timezone ?: "UTC")
+            val sunriseMinutes = calculateSunEventMinutesForZone(
+                date = date,
+                zoneId = zoneId,
+                latitude = latitude,
+                longitude = longitude,
+                isSunrise = true
+            )
+
+            val sunsetMinutes = calculateSunEventMinutesForZone(
+                date = date,
+                zoneId = zoneId,
+                latitude = latitude,
+                longitude = longitude,
+                isSunrise = false
+            )
+
+            if (sunriseMinutes == null || sunsetMinutes == null) {
+                null
+            } else {
+                minutesToClock(sunriseMinutes) to minutesToClock(sunsetMinutes)
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    private fun calculateSunEventMinutesForZone(
+        date: LocalDate,
+        zoneId: ZoneId,
+        latitude: Double,
+        longitude: Double,
+        isSunrise: Boolean
+    ): Int? {
+        val noonOffsetHours = date
+            .atTime(12, 0)
+            .atZone(zoneId)
+            .offset
+            .totalSeconds / 3600.0
+
+        val firstPassMinutes = calculateSunEventMinutes(
+            dayOfYear = date.dayOfYear,
+            latitude = latitude,
+            longitude = longitude,
+            utcOffsetHours = noonOffsetHours,
+            isSunrise = isSunrise
+        ) ?: return null
+
+        val firstPassTime = java.time.LocalTime.of(
+            firstPassMinutes / 60,
+            firstPassMinutes % 60
+        )
+
+        val eventOffsetHours = date
+            .atTime(firstPassTime)
+            .atZone(zoneId)
+            .offset
+            .totalSeconds / 3600.0
+
+        return calculateSunEventMinutes(
+            dayOfYear = date.dayOfYear,
+            latitude = latitude,
+            longitude = longitude,
+            utcOffsetHours = eventOffsetHours,
+            isSunrise = isSunrise
+        )
+    }
+
+    private fun calculateSunEventMinutes(
+        dayOfYear: Int,
+        latitude: Double,
+        longitude: Double,
+        utcOffsetHours: Double,
+        isSunrise: Boolean
+    ): Int? {
+        val lngHour = longitude / 15.0
+        val approxTime = if (isSunrise) {
+            dayOfYear + (6.0 - lngHour) / 24.0
+        } else {
+            dayOfYear + (18.0 - lngHour) / 24.0
+        }
+
+        val meanAnomaly = 0.9856 * approxTime - 3.289
+        val trueLongitude = normalizeDegrees(
+            meanAnomaly +
+                1.916 * sin(Math.toRadians(meanAnomaly)) +
+                0.020 * sin(Math.toRadians(2 * meanAnomaly)) +
+                282.634
+        )
+
+        var rightAscension = Math.toDegrees(
+            atan(0.91764 * tan(Math.toRadians(trueLongitude)))
+        )
+        rightAscension = normalizeDegrees(rightAscension)
+
+        val lQuadrant = floor(trueLongitude / 90.0) * 90.0
+        val raQuadrant = floor(rightAscension / 90.0) * 90.0
+        rightAscension += lQuadrant - raQuadrant
+        rightAscension /= 15.0
+
+        val sinDec = 0.39782 * sin(Math.toRadians(trueLongitude))
+        val cosDec = cos(asin(sinDec))
+
+        val cosH = (
+            cos(Math.toRadians(90.833)) -
+                sinDec * sin(Math.toRadians(latitude))
+            ) / (
+            cosDec * cos(Math.toRadians(latitude))
+            )
+
+        if (cosH > 1 || cosH < -1) return null
+
+        var hourAngle = if (isSunrise) {
+            360.0 - Math.toDegrees(acos(cosH))
+        } else {
+            Math.toDegrees(acos(cosH))
+        }
+
+        hourAngle /= 15.0
+
+        val localMeanTime = hourAngle + rightAscension - 0.06571 * approxTime - 6.622
+
+        var utcHours = localMeanTime - lngHour
+        while (utcHours < 0) utcHours += 24.0
+        while (utcHours >= 24) utcHours -= 24.0
+
+        val localHours = utcHours + utcOffsetHours
+        val localMinutes = (localHours * 60.0).toInt()
+
+        return ((localMinutes % 1440) + 1440) % 1440
+    }
+
+    private fun normalizeDegrees(value: Double): Double {
+        var result = value % 360.0
+        if (result < 0) result += 360.0
+        return result
+    }
+
+    private fun minutesToClock(totalMinutes: Int): String {
+        val normalized = ((totalMinutes % 1440) + 1440) % 1440
+        val hour = normalized / 60
+        val minute = normalized % 60
+        return "%02d:%02d".format(hour, minute)
+    }
+
     private fun normalizeHistoricalSolarTime(dateTime: String): String {
         return try {
             val parsed = LocalDateTime.parse(dateTime)
@@ -1003,6 +1213,54 @@ class WeatherViewModel @Inject constructor(
         return mostFrequentIntOr(default)
     }
 
+    private fun applyStormDetection(response: OpenMeteoResponse): OpenMeteoResponse {
+        val hourly = response.hourly ?: return response
+
+        val size = minOf(
+            hourly.time.size,
+            hourly.temperature.size,
+            hourly.weatherCode.size,
+            hourly.cloudCover.size,
+            hourly.humidity.size,
+            hourly.pressure.size,
+            hourly.isDay.size
+        )
+
+        if (size == 0) return response
+
+        val detectedWeatherCodes = hourly.weatherCode.mapIndexed { index, originalCode ->
+            if (index < size) {
+                calculateStormWeatherCode(
+                    currentIndex = index,
+                    hourly = hourly,
+                    originalWeatherCode = originalCode
+                )
+            } else {
+                originalCode
+            }
+        }
+
+        val detectedHourly = hourly.copy(
+            weatherCode = detectedWeatherCodes
+        )
+
+        val current = response.current
+        val detectedCurrent = current?.let {
+            val currentIndex = hourly.time.indexOf(current.time)
+                .takeIf { index -> index >= 0 }
+                ?: 0
+
+            it.copy(
+                weatherCode = detectedWeatherCodes.getOrNull(currentIndex) ?: it.weatherCode
+            )
+        }
+
+        return response.copy(
+            current = detectedCurrent,
+            hourly = detectedHourly
+        )
+    }
+
     private fun calculateStormWeatherCode(
         currentIndex: Int,
         hourly: com.example.weathersimulator.data.remote.weather.HourlyDto,
@@ -1010,14 +1268,39 @@ class WeatherViewModel @Inject constructor(
     ): Int {
         if (currentIndex < 0 || currentIndex >= hourly.time.size) return originalWeatherCode
 
-        val precipitation = hourly.precipitation.getOrNull(currentIndex) ?: 0.0
-        val rain = hourly.rain.getOrNull(currentIndex) ?: 0.0
-        val cloudCover = hourly.cloudCover.getOrNull(currentIndex) ?: 0
-        val humidity = hourly.humidity.getOrNull(currentIndex) ?: 0
-        val windGusts = hourly.windGusts.getOrNull(currentIndex) ?: 0.0
-        val temperature = hourly.temperature.getOrNull(currentIndex) ?: 0.0
-        val pressure = hourly.pressure.getOrNull(currentIndex) ?: 1013.0
+        when (originalWeatherCode) {
+            96, 99 -> return 998
+            95 -> return 997
+        }
 
+        val nearbyIndexes = (currentIndex - 1..currentIndex + 1)
+            .filter { it >= 0 && it < hourly.time.size }
+
+        val precipitation = nearbyIndexes.maxOfOrNull {
+            hourly.precipitation.getOrNull(it) ?: 0.0
+        } ?: 0.0
+
+        val rain = nearbyIndexes.maxOfOrNull {
+            hourly.rain.getOrNull(it) ?: 0.0
+        } ?: 0.0
+
+        val cloudCover = nearbyIndexes.maxOfOrNull {
+            hourly.cloudCover.getOrNull(it) ?: 0
+        } ?: 0
+
+        val humidity = nearbyIndexes.maxOfOrNull {
+            hourly.humidity.getOrNull(it) ?: 0
+        } ?: 0
+
+        val windGusts = nearbyIndexes.maxOfOrNull {
+            hourly.windGusts.getOrNull(it) ?: 0.0
+        } ?: 0.0
+
+        val temperature = nearbyIndexes.maxOfOrNull {
+            hourly.temperature.getOrNull(it) ?: 0.0
+        } ?: 0.0
+
+        val pressure = hourly.pressure.getOrNull(currentIndex) ?: 1013.0
         val pressure3HoursAgo = hourly.pressure.getOrNull(currentIndex - 3) ?: pressure
         val pressureDrop3h = pressure - pressure3HoursAgo
 
@@ -1027,30 +1310,38 @@ class WeatherViewModel @Inject constructor(
 
         val isSevereStorm =
             cloudCover >= 95 &&
-            humidity >= 85 &&
-            pressure <= 1005 &&
-            hasVeryHeavyRain &&
-            windGusts >= 50
+                humidity >= 85 &&
+                pressure <= 1005 &&
+                hasVeryHeavyRain &&
+                windGusts >= 50
 
         val isStorm =
             cloudCover >= 85 &&
-            humidity >= 75 &&
-            pressure <= 1008 &&
-            hasRain &&
-            (windGusts >= 35 || pressureDrop3h <= -3.0 || hasHeavyRain)
+                humidity >= 75 &&
+                pressure <= 1008 &&
+                hasRain &&
+                (windGusts >= 35 || pressureDrop3h <= -3.0 || hasHeavyRain)
+
+        val isLikelyStorm =
+            cloudCover >= 85 &&
+                humidity >= 75 &&
+                pressure <= 1010 &&
+                pressureDrop3h <= -4.0 &&
+                windGusts >= 35
 
         val isSunStorm =
             cloudCover in 45..84 &&
-            humidity >= 70 &&
-            pressure <= 1010 &&
-            hasRain &&
-            windGusts >= 30 &&
-            temperature >= 18
+                humidity >= 70 &&
+                pressure <= 1010 &&
+                (hasRain || pressureDrop3h <= -3.0) &&
+                windGusts >= 30 &&
+                temperature >= 18
 
         return when {
-            isSevereStorm -> 998   // furtună puternică
-            isStorm -> 997         // furtună
-            isSunStorm -> 996      // furtună cu soare
+            isSevereStorm -> 998
+            isStorm -> 997
+            isLikelyStorm -> 997
+            isSunStorm -> 996
             else -> originalWeatherCode
         }
     }
@@ -1217,6 +1508,83 @@ class WeatherViewModel @Inject constructor(
     fun deleteFavoriteCity(city: FavoriteCityEntity) {
         viewModelScope.launch {
             favoriteCityRepository.deleteFavorite(city.id)
+        }
+    }
+
+    fun updateArchiveCitySearchQuery(query: String) {
+        _state.update {
+            it.copy(
+                archiveCitySearchQuery = query,
+                archiveCitySearchError = null
+            )
+        }
+    }
+
+    fun searchArchiveCity() {
+        val query = _state.value.archiveCitySearchQuery.trim()
+
+        if (query.length < 2) {
+            _state.update {
+                it.copy(archiveCitySearchError = "Introdu cel puțin 2 caractere.")
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    isSearchingArchiveCity = true,
+                    archiveCitySearchError = null
+                )
+            }
+
+            try {
+                val results = citySearchRepository.searchCity(query)
+
+                _state.update {
+                    it.copy(
+                        archiveCitySearchResults = results,
+                        isSearchingArchiveCity = false,
+                        archiveCitySearchError = if (results.isEmpty()) "Nu am găsit orașul căutat." else null
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isSearchingArchiveCity = false,
+                        archiveCitySearchError = "Nu am putut căuta orașul. Verifică internetul."
+                    )
+                }
+            }
+        }
+    }
+
+    fun selectArchiveCityFromSearch(city: CityResultDto) {
+        val displayName = city.displayName()
+
+        historicalCachedResponse = null
+        historicalDailyRowsByDate = emptyMap()
+
+        _state.update {
+            it.copy(
+                selectedArchiveCity = displayName,
+                selectedArchiveSource = "API",
+                selectedArchiveLatitude = city.latitude,
+                selectedArchiveLongitude = city.longitude,
+                selectedArchiveTimezone = city.timezone ?: "auto",
+                archiveCitySearchQuery = displayName,
+                archiveCitySearchResults = emptyList(),
+                archiveCitySearchError = null,
+                selectedHistoryMonth = null,
+                selectedHistoryDay = null,
+                availableHistoryMonths = buildAvailableHistoryMonths(),
+                availableHistoryDays = emptyList(),
+                historicalHourlyForecast = emptyList(),
+                historyMonthSummary = null,
+                historyDaySummary = null,
+                data = null,
+                error = null
+            )
         }
     }
 }

@@ -85,7 +85,10 @@ fun AppNavigation() {
                     },
                     onOpenSelectedDay = {
                         navController.navigate(Routes.WEATHER_HISTORY_DAY_ROUTE)
-                    }
+                    },
+                    onArchiveCitySearchQueryChange = weatherVm::updateArchiveCitySearchQuery,
+                    onSearchArchiveCity = weatherVm::searchArchiveCity,
+                    onArchiveSearchCitySelected = weatherVm::selectArchiveCityFromSearch
                 )
             }
         }

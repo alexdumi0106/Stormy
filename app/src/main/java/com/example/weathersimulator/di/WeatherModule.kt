@@ -11,6 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 import java.util.concurrent.TimeUnit
 import com.example.weathersimulator.data.remote.city.CitySearchApi
+import com.example.weathersimulator.data.remote.weather.OpenMeteoArchiveApi
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -20,10 +21,10 @@ object WeatherModule {
     @Singleton
     fun provideOpenMeteoApi(): OpenMeteoApi {
         val client = OkHttpClient.Builder()
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(20, TimeUnit.SECONDS)
-            .callTimeout(35, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(90, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .callTimeout(120, TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)
             .build()
 
@@ -33,6 +34,25 @@ object WeatherModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(OpenMeteoApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOpenMeteoArchiveApi(): OpenMeteoArchiveApi {
+        val client = OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(90, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .callTimeout(120, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true)
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl("https://archive-api.open-meteo.com/")
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(OpenMeteoArchiveApi::class.java)
     }
 
     @Provides

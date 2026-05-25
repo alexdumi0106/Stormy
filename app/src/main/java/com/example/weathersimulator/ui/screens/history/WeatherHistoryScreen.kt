@@ -51,6 +51,9 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.foundation.background
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextFieldDefaults
+import com.example.weathersimulator.data.remote.city.CityResultDto
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +65,10 @@ fun WeatherHistoryScreen(
     onCitySelected: (String) -> Unit,
     onSourceSelected: (String) -> Unit,
     onMonthSelected: (String) -> Unit,
-    onOpenSelectedDay: () -> Unit
+    onOpenSelectedDay: () -> Unit,
+    onArchiveCitySearchQueryChange: (String) -> Unit,
+    onSearchArchiveCity: () -> Unit,
+    onArchiveSearchCitySelected: (CityResultDto) -> Unit,
 ) {
     var yearExpanded by remember { mutableStateOf(false) }
     var monthExpanded by remember { mutableStateOf(false) }
@@ -311,6 +317,62 @@ fun WeatherHistoryScreen(
                                                 )
                                             )
                                         }
+                                    } 
+                                }
+                                OutlinedTextField(
+                                    value = state.archiveCitySearchQuery,
+                                    onValueChange = onArchiveCitySearchQueryChange,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    label = { Text("Caută orice oraș") },
+                                    singleLine = true,
+                                    colors = TextFieldDefaults.colors(
+                                        focusedContainerColor = Color(0xFF243852),
+                                        unfocusedContainerColor = Color(0xFF243852),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White,
+                                        focusedLabelColor = Color(0xFFBEE7FF),
+                                        unfocusedLabelColor = Color(0xFF86A7CF)
+                                    )
+                                )
+
+                                Button(
+                                    onClick = onSearchArchiveCity,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3D6FA6))
+                                ) {
+                                    Text("Caută oraș")
+                                }
+
+                                if (state.isSearchingArchiveCity) {
+                                    CircularProgressIndicator(color = Color(0xFFBEE7FF))
+                                }
+
+                                state.archiveCitySearchError?.let {
+                                    Text(
+                                        text = it,
+                                        color = Color(0xFFFF9999),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                state.archiveCitySearchResults.forEach { city ->
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                selectedYear = null
+                                                selectedMonthKey = null
+                                                isMonthSelectionConfirmed = false
+                                                onArchiveSearchCitySelected(city)
+                                            },
+                                        colors = CardDefaults.cardColors(containerColor = Color(0xFF243852))
+                                    ) {
+                                        Text(
+                                            text = city.displayName(),
+                                            modifier = Modifier.padding(14.dp),
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Medium
+                                        )
                                     }
                                 }
                             }

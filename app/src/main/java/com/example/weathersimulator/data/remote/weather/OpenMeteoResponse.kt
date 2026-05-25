@@ -7,6 +7,9 @@ data class OpenMeteoResponse(
     val longitude: Double,
     val timezone: String? = null,
 
+    @SerializedName("utc_offset_seconds")
+    val utcOffsetSeconds: Int? = null,
+
     val current: CurrentDto? = null,
     val hourly: HourlyDto? = null,
     val daily: DailyDto? = null
