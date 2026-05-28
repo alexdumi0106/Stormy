@@ -264,6 +264,9 @@ class WeatherViewModel @Inject constructor(
                 historicalHourlyForecast = emptyList(),
                 historyMonthSummary = null,
                 historyDaySummary = null,
+                archiveCitySearchQuery = "",
+                archiveCitySearchResults = emptyList(),
+                archiveCitySearchError = null,
                 data = null,
                 error = null
             )
@@ -1300,6 +1303,25 @@ class WeatherViewModel @Inject constructor(
             hourly.temperature.getOrNull(it) ?: 0.0
         } ?: 0.0
 
+        val snow = nearbyIndexes.maxOfOrNull {
+            hourly.snowfall.getOrNull(it) ?: 0.0
+        } ?: 0.0
+
+        val isColdWeather = temperature <= 2.0
+        val hasSnowSignal = snow > 0.0 || originalWeatherCode in setOf(71, 73, 75, 77, 85, 86)
+        val isFreezingRainCode = originalWeatherCode in setOf(56, 57, 66, 67)
+
+        if (isColdWeather && hasSnowSignal) {
+            return when {
+                snow >= 1.0 || precipitation >= 2.0 -> 75
+                else -> 73
+            }
+        }
+
+        if (temperature <= 0.0 && !isFreezingRainCode) {
+            return originalWeatherCode
+        }
+
         val pressure = hourly.pressure.getOrNull(currentIndex) ?: 1013.0
         val pressure3HoursAgo = hourly.pressure.getOrNull(currentIndex - 3) ?: pressure
         val pressureDrop3h = pressure - pressure3HoursAgo
@@ -1309,25 +1331,29 @@ class WeatherViewModel @Inject constructor(
         val hasVeryHeavyRain = rain >= 5.0 || precipitation >= 6.0
 
         val isSevereStorm =
-            cloudCover >= 95 &&
+            temperature >= 1.0 &&
+                cloudCover >= 95 &&
                 humidity >= 85 &&
                 pressure <= 1005 &&
                 hasVeryHeavyRain &&
                 windGusts >= 50
 
-        val isStorm =
-            cloudCover >= 85 &&
+       val isStorm =
+            temperature >= 1.0 &&
+                cloudCover >= 85 &&
                 humidity >= 75 &&
                 pressure <= 1008 &&
                 hasRain &&
                 (windGusts >= 35 || pressureDrop3h <= -3.0 || hasHeavyRain)
 
         val isLikelyStorm =
-            cloudCover >= 85 &&
+            temperature >= 1.0 &&
+                cloudCover >= 85 &&
                 humidity >= 75 &&
                 pressure <= 1010 &&
                 pressureDrop3h <= -4.0 &&
-                windGusts >= 35
+                windGusts >= 35 &&
+                hasRain
 
         val isSunStorm =
             cloudCover in 45..84 &&
@@ -1335,7 +1361,7 @@ class WeatherViewModel @Inject constructor(
                 pressure <= 1010 &&
                 (hasRain || pressureDrop3h <= -3.0) &&
                 windGusts >= 30 &&
-                temperature >= 18
+                temperature >= 1.0
 
         return when {
             isSevereStorm -> 998

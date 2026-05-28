@@ -78,6 +78,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.IconButton
@@ -546,7 +547,16 @@ fun CitySearchCard(
                             text = "Ex: Timișoara, Paris, Londra",
                             color = Color.White.copy(alpha = 0.65f)
                         )
-                    }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        cursorColor = Color(0xFFBEE7FF),
+                        focusedBorderColor = Color(0xFF86A7CF),
+                        unfocusedBorderColor = Color(0xFF5A83B4).copy(alpha = 0.72f),
+                        focusedContainerColor = Color(0xFF243852).copy(alpha = 0.72f),
+                        unfocusedContainerColor = Color(0xFF243852).copy(alpha = 0.58f)
+                    )
                 )
 
                 IconButton(

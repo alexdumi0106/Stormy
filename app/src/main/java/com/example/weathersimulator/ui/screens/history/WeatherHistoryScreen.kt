@@ -268,6 +268,7 @@ fun WeatherHistoryScreen(
                                         expanded = cityExpanded,
                                         onDismissRequest = { cityExpanded = false },
                                         modifier = Modifier
+                                            .fillMaxWidth(0.88f)
                                             .background(
                                                 color = Color(0xFF243852),
                                                 shape = RoundedCornerShape(18.dp)
@@ -317,62 +318,73 @@ fun WeatherHistoryScreen(
                                                 )
                                             )
                                         }
-                                    } 
-                                }
-                                OutlinedTextField(
-                                    value = state.archiveCitySearchQuery,
-                                    onValueChange = onArchiveCitySearchQueryChange,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    label = { Text("Caută orice oraș") },
-                                    singleLine = true,
-                                    colors = TextFieldDefaults.colors(
-                                        focusedContainerColor = Color(0xFF243852),
-                                        unfocusedContainerColor = Color(0xFF243852),
-                                        focusedTextColor = Color.White,
-                                        unfocusedTextColor = Color.White,
-                                        focusedLabelColor = Color(0xFFBEE7FF),
-                                        unfocusedLabelColor = Color(0xFF86A7CF)
-                                    )
-                                )
+                                        Spacer(modifier = Modifier.height(8.dp))
 
-                                Button(
-                                    onClick = onSearchArchiveCity,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3D6FA6))
-                                ) {
-                                    Text("Caută oraș")
-                                }
-
-                                if (state.isSearchingArchiveCity) {
-                                    CircularProgressIndicator(color = Color(0xFFBEE7FF))
-                                }
-
-                                state.archiveCitySearchError?.let {
-                                    Text(
-                                        text = it,
-                                        color = Color(0xFFFF9999),
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-
-                                state.archiveCitySearchResults.forEach { city ->
-                                    Card(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable {
-                                                selectedYear = null
-                                                selectedMonthKey = null
-                                                isMonthSelectionConfirmed = false
-                                                onArchiveSearchCitySelected(city)
-                                            },
-                                        colors = CardDefaults.cardColors(containerColor = Color(0xFF243852))
-                                    ) {
-                                        Text(
-                                            text = city.displayName(),
-                                            modifier = Modifier.padding(14.dp),
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Medium
+                                        OutlinedTextField(
+                                            value = state.archiveCitySearchQuery,
+                                            onValueChange = onArchiveCitySearchQueryChange,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 12.dp),
+                                            label = { Text("Caută orice oraș") },
+                                            singleLine = true,
+                                            colors = TextFieldDefaults.colors(
+                                                focusedContainerColor = Color(0xFF182A45),
+                                                unfocusedContainerColor = Color(0xFF182A45),
+                                                focusedTextColor = Color.White,
+                                                unfocusedTextColor = Color.White,
+                                                focusedLabelColor = Color(0xFFBEE7FF),
+                                                unfocusedLabelColor = Color(0xFF86A7CF)
+                                            )
                                         )
+
+                                        Button(
+                                            onClick = onSearchArchiveCity,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3D6FA6))
+                                        ) {
+                                            Text("Caută oraș")
+                                        }
+
+                                        if (state.isSearchingArchiveCity) {
+                                            CircularProgressIndicator(
+                                                color = Color(0xFFBEE7FF),
+                                                modifier = Modifier.padding(14.dp)
+                                            )
+                                        }
+
+                                        state.archiveCitySearchError?.let {
+                                            Text(
+                                                text = it,
+                                                color = Color(0xFFFF9999),
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                                            )
+                                        }
+
+                                        state.archiveCitySearchResults.forEach { city ->
+                                            DropdownMenuItem(
+                                                text = {
+                                                    Text(
+                                                        text = city.displayName(),
+                                                        color = Color.White,
+                                                        fontWeight = FontWeight.Medium
+                                                    )
+                                                },
+                                                onClick = {
+                                                    cityExpanded = false
+                                                    selectedYear = null
+                                                    selectedMonthKey = null
+                                                    isMonthSelectionConfirmed = false
+                                                    onArchiveSearchCitySelected(city)
+                                                },
+                                                colors = MenuDefaults.itemColors(
+                                                    textColor = Color.White
+                                                )
+                                            )
+                                        }
                                     }
                                 }
                             }

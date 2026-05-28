@@ -421,8 +421,13 @@ private fun AppleWeatherMoodLayer(
                 drawOvercastPuffyField(drift, w, h, alpha = 0.74f)
             }
             AppleCloudStyle.STORM -> {
-                drawOvercastPuffyField(drift, w, h, alpha = 0.84f)
-                drawStormCloudShadow(w, h, alpha = 0.20f)
+                drawOvercastPuffyField(
+                    drift = if (isStormWithSun) drift + 0.16f else drift,
+                    w = w,
+                    h = h,
+                    alpha = if (isStormWithSun) 0.72f else 0.84f
+                )
+                drawStormCloudShadow(w, h, alpha = if (isStormWithSun) 0.12f else 0.20f)
             }
             AppleCloudStyle.SNOW,
             AppleCloudStyle.FOG -> drawStratusClouds(drift, w, h, alpha = 0.60f)
@@ -441,7 +446,7 @@ private fun AppleWeatherMoodLayer(
         }
 
         if (isStormWithSun) {
-            drawStormSunBreak(w, h, alpha = 0.72f)
+            drawStormSunBreak(w, h, alpha = 0.92f)
         }
 
         if (isRain || isStorm) {
@@ -976,6 +981,61 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawCirrusRichParti
         height = h * 0.30f,
         alpha = alpha * 0.64f,
         sweep = -0.14f,
+        detail = 0
+    )
+
+    drawPaintedCirrusPlume(
+        start = Offset(w * -0.30f + drift * w * 0.014f, h * 0.055f),
+        width = w * 1.12f,
+        height = h * 0.22f,
+        alpha = alpha * 0.42f,
+        sweep = -0.11f,
+        interiorGlow = 1.18f,
+        showSoftKnots = false,
+        detail = 0
+    )
+
+    drawPaintedCirrusPlume(
+        start = Offset(w * 0.36f + drift * w * 0.018f, h * 0.070f),
+        width = w * 0.92f,
+        height = h * 0.20f,
+        alpha = alpha * 0.38f,
+        sweep = -0.10f,
+        interiorGlow = 1.16f,
+        showSoftKnots = false,
+        detail = 0
+    )
+
+    drawPaintedCirrusPlume(
+        start = Offset(w * 0.58f + drift * w * 0.019f, h * 0.040f),
+        width = w * 0.72f,
+        height = h * 0.18f,
+        alpha = alpha * 0.34f,
+        sweep = -0.09f,
+        interiorGlow = 1.15f,
+        showSoftKnots = false,
+        detail = 0
+    )
+
+    drawPaintedCirrusPlume(
+        start = Offset(w * 0.72f + drift * w * 0.020f, h * 0.120f),
+        width = w * 0.62f,
+        height = h * 0.17f,
+        alpha = alpha * 0.32f,
+        sweep = -0.08f,
+        interiorGlow = 1.14f,
+        showSoftKnots = false,
+        detail = 0
+    )
+
+    drawPaintedCirrusPlume(
+        start = Offset(w * -0.10f + drift * w * 0.017f, h * 0.105f),
+        width = w * 1.18f,
+        height = h * 0.24f,
+        alpha = alpha * 0.46f,
+        sweep = -0.12f,
+        interiorGlow = 1.18f,
+        showSoftKnots = false,
         detail = 0
     )
 
@@ -2387,30 +2447,44 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawStormSunBreak(
 ) {
     val sunCenter = Offset(w * 0.21f, h * 0.14f)
 
-    drawCircle(
+    drawOval(
         brush = Brush.radialGradient(
             colors = listOf(
-                Color.White.copy(alpha = alpha * 0.70f),
-                Color(0xFFFFF2D6).copy(alpha = alpha * 0.38f),
-                Color.White.copy(alpha = alpha * 0.16f),
+                Color(0xFFFFF7DF).copy(alpha = alpha * 0.42f),
+                Color.White.copy(alpha = alpha * 0.20f),
                 Color.Transparent
             ),
             center = sunCenter,
-            radius = w * 0.30f
+            radius = w * 0.42f
         ),
-        radius = w * 0.30f,
+        topLeft = Offset(sunCenter.x - w * 0.30f, sunCenter.y - h * 0.090f),
+        size = Size(w * 0.68f, h * 0.230f)
+    )
+
+    drawCircle(
+        brush = Brush.radialGradient(
+            colors = listOf(
+                Color.White.copy(alpha = alpha * 0.88f),
+                Color(0xFFFFF2D6).copy(alpha = alpha * 0.50f),
+                Color.White.copy(alpha = alpha * 0.22f),
+                Color.Transparent
+            ),
+            center = sunCenter,
+            radius = w * 0.34f
+        ),
+        radius = w * 0.34f,
         center = sunCenter
     )
 
-    repeat(8) { ray ->
-        val angle = (ray * 45f + 8f) * 0.017453292f
+    listOf(18f, 34f, 54f, 78f, 112f, 138f).forEachIndexed { index, degrees ->
+        val angle = degrees * 0.017453292f
         drawSoftSunRay(
             center = sunCenter,
             angle = angle,
-            inner = w * 0.052f,
-            outer = w * 0.190f,
-            baseHalfWidth = w * 0.013f,
-            alpha = alpha * 0.070f,
+            inner = w * (0.046f + index * 0.003f),
+            outer = w * (0.250f + index * 0.018f),
+            baseHalfWidth = w * (0.020f - index * 0.0018f),
+            alpha = alpha * (0.135f - index * 0.010f),
             warm = true
         )
     }
@@ -2419,21 +2493,47 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawStormSunBreak(
         brush = Brush.radialGradient(
             colors = listOf(
                 Color.White.copy(alpha = alpha),
-                Color.White.copy(alpha = alpha * 0.74f),
-                Color.White.copy(alpha = alpha * 0.22f),
+                Color(0xFFFFF8E8).copy(alpha = alpha * 0.82f),
+                Color.White.copy(alpha = alpha * 0.30f),
                 Color.Transparent
             ),
             center = sunCenter,
-            radius = w * 0.112f
+            radius = w * 0.126f
         ),
-        radius = w * 0.112f,
+        radius = w * 0.126f,
         center = sunCenter
     )
 
     drawCircle(
         color = Color.White.copy(alpha = alpha),
-        radius = w * 0.036f,
+        radius = w * 0.042f,
         center = sunCenter
+    )
+
+    drawOval(
+        brush = Brush.horizontalGradient(
+            colors = listOf(
+                Color.Transparent,
+                Color(0xFFF6FAFF).copy(alpha = alpha * 0.30f),
+                Color.White.copy(alpha = alpha * 0.22f),
+                Color.Transparent
+            )
+        ),
+        topLeft = Offset(w * 0.015f, h * 0.080f),
+        size = Size(w * 0.48f, h * 0.052f)
+    )
+
+    drawOval(
+        brush = Brush.horizontalGradient(
+            colors = listOf(
+                Color.Transparent,
+                Color.White.copy(alpha = alpha * 0.24f),
+                Color(0xFFCAD6DF).copy(alpha = alpha * 0.18f),
+                Color.Transparent
+            )
+        ),
+        topLeft = Offset(w * 0.070f, h * 0.170f),
+        size = Size(w * 0.58f, h * 0.070f)
     )
 }
 
