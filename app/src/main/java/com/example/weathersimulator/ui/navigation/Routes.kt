@@ -12,6 +12,7 @@ object Routes {
     const val PROFILE = "profile"
 
     const val AI_SIMULATION = "ai_simulation"
+    const val SKY_ANALYZER = "sky_analyzer"
 
     const val WEATHER_HISTORY_ROUTE = "weather_history"
     const val WEATHER_HISTORY_DAY_ROUTE = "weather_history_day"

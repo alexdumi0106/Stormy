@@ -42,6 +42,7 @@ import java.time.LocalTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import androidx.compose.material3.CircularProgressIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -328,6 +329,22 @@ fun WeatherHistoryDayScreen(
                 }
 
                 item {
+                    HistoricalAiDescriptionCard(
+                        text = state.historicalDayAiDescription,
+                        isLoading = state.isHistoricalDayAiDescriptionLoading,
+                        error = state.historicalDayAiDescriptionError
+                    )
+                }
+
+                item {
+                    ClimateComparisonCard(
+                        comparison = state.climateComparison,
+                        isLoading = state.isClimateComparisonLoading,
+                        error = state.climateComparisonError
+                    )
+                }
+
+                item {
                     Text(
                         text = "Prognoză meteo pe ore",
                         style = MaterialTheme.typography.titleMedium,
@@ -498,6 +515,209 @@ private fun HistoricalHourRow(
                 color = Color.White
             )
         }
+    }
+}
+
+@Composable
+private fun HistoricalAiDescriptionCard(
+    text: String?,
+    isLoading: Boolean,
+    error: String?
+) {
+    if (!isLoading && text.isNullOrBlank() && error.isNullOrBlank()) {
+        return
+    }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E344A)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                text = "Descriere AI a zilei",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White
+            )
+
+            when {
+                isLoading -> {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp,
+                            color = Color.White
+                        )
+
+                        Text(
+                            text = "AI analizează ziua selectată...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White.copy(alpha = 0.82f)
+                        )
+                    }
+                }
+
+                !text.isNullOrBlank() -> {
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
+                }
+
+                !error.isNullOrBlank() -> {
+                    Text(
+                        text = error,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFFFFB4B4)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ClimateComparisonCard(
+    comparison: ClimateComparisonUi?,
+    isLoading: Boolean,
+    error: String?
+) {
+    if (!isLoading && comparison == null && error.isNullOrBlank()) {
+        return
+    }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E344A)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "Comparatie climatica",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White
+            )
+
+            when {
+                isLoading -> {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp,
+                            color = Color.White
+                        )
+
+                        Text(
+                            text = "Se încarcă ziua de comparație...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White.copy(alpha = 0.82f)
+                        )
+                    }
+                }
+
+                comparison != null -> {
+                    Text(
+                        text = "${comparison.selectedDateLabel} vs ${comparison.comparisonDateLabel}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
+                    )
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        ClimateComparisonColumn(
+                            title = comparison.selectedDateLabel,
+                            maxTemperature = comparison.selectedMaxTemperature,
+                            minTemperature = comparison.selectedMinTemperature,
+                            humidity = comparison.selectedAverageHumidity,
+                            pressure = comparison.selectedAveragePressure,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        ClimateComparisonColumn(
+                            title = comparison.comparisonDateLabel,
+                            maxTemperature = comparison.comparisonMaxTemperature,
+                            minTemperature = comparison.comparisonMinTemperature,
+                            humidity = comparison.comparisonAverageHumidity,
+                            pressure = comparison.comparisonAveragePressure,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    comparison.aiDescription
+                        ?.takeIf { it.isNotBlank() }
+                        ?.let { description ->
+                            Text(
+                                text = description,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
+                        }
+                }
+
+                !error.isNullOrBlank() -> {
+                    Text(
+                        text = error,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFFFFB4B4)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ClimateComparisonColumn(
+    title: String,
+    maxTemperature: String,
+    minTemperature: String,
+    humidity: String,
+    pressure: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelMedium,
+            color = Color.White.copy(alpha = 0.78f)
+        )
+
+        Text(
+            text = "Max: $maxTemperature",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.White
+        )
+
+        Text(
+            text = "Min: $minTemperature",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.White
+        )
+
+        Text(
+            text = "Umiditate: $humidity",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.White
+        )
+
+        Text(
+            text = "Presiune: $pressure",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.White
+        )
     }
 }
 

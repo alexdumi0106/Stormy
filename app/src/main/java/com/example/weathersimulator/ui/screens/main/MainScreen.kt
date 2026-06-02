@@ -86,6 +86,7 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.PhotoCamera
 import com.example.weathersimulator.data.remote.city.CityResultDto
 import com.example.weathersimulator.data.local.city.FavoriteCityEntity
 import androidx.compose.material.icons.rounded.Search
@@ -128,7 +129,7 @@ fun WeatherHomeSection(
         return
     }
 
-    if (isLoading || data?.current == null) {
+    if (data?.current == null) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -422,6 +423,9 @@ fun MainScreen(navController: NavController) {
                 },
                 onSettingsClick = {
                     navController.navigate(Routes.SETTINGS)
+                },
+                onSkyAnalyzerClick = {
+                    navController.navigate(Routes.SKY_ANALYZER)
                 }
             )
         }
@@ -485,7 +489,8 @@ fun WeatherBottomNavBar(
     onHomeClick: () -> Unit,
     onWeatherDataClick: () -> Unit,
     onSimulatorClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onSkyAnalyzerClick: () -> Unit
 ) {
     NavigationBar(
         containerColor = Color(0xFF173A5E).copy(alpha = 0.96f),
@@ -528,6 +533,19 @@ fun WeatherBottomNavBar(
                 )
             },
             label = { Text("Simulator") },
+            colors = navItemColors()
+        )
+
+        NavigationBarItem(
+            selected = false,
+            onClick = onSkyAnalyzerClick,
+            icon = {
+                Icon(
+                    imageVector = Icons.Rounded.PhotoCamera,
+                    contentDescription = "Sky Analyzer"
+                )
+            },
+            label = { Text("Sky AI") },
             colors = navItemColors()
         )
 

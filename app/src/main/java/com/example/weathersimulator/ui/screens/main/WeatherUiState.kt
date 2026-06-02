@@ -43,6 +43,13 @@ data class WeatherUiState(
     // History summaries
     val historyMonthSummary: HistoryMonthSummaryUi? = null,
     val historyDaySummary: HistoryDaySummaryUi? = null,
+    val historicalDayAiDescription: String? = null,
+    val isHistoricalDayAiDescriptionLoading: Boolean = false,
+    val historicalDayAiDescriptionError: String? = null,
+
+    val climateComparison: ClimateComparisonUi? = null,
+    val isClimateComparisonLoading: Boolean = false,
+    val climateComparisonError: String? = null,
     val historicalDailyRowsByDate: Map<String, HistoryDailyRowUi> = emptyMap(),
 
     // Hourly rows for selected history day
@@ -105,6 +112,20 @@ data class HistoryDaySummaryUi(
     val averagePressure: String,
     val sunrise: String?,
     val sunset: String?
+)
+
+data class ClimateComparisonUi(
+    val selectedDateLabel: String,
+    val comparisonDateLabel: String,
+    val selectedMaxTemperature: String,
+    val comparisonMaxTemperature: String,
+    val selectedMinTemperature: String,
+    val comparisonMinTemperature: String,
+    val selectedAverageHumidity: String,
+    val comparisonAverageHumidity: String,
+    val selectedAveragePressure: String,
+    val comparisonAveragePressure: String,
+    val aiDescription: String?
 )
 
 data class HistoryDailyRowUi(

@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.weathersimulator.ui.screens.main.WeatherViewModel
+import com.example.weathersimulator.ui.screens.skyanalyzer.SkyAnalyzerScreen
 
 
 @Composable
@@ -122,6 +123,14 @@ fun AppNavigation() {
         composable(Routes.AI_SIMULATION) {
             WeatherSimulatorTheme(darkTheme = false, dynamicColor = false) {
                 AiSimulationScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable(Routes.SKY_ANALYZER) {
+            WeatherSimulatorTheme(darkTheme = false, dynamicColor = false) {
+                SkyAnalyzerScreen(
                     onBack = { navController.popBackStack() }
                 )
             }

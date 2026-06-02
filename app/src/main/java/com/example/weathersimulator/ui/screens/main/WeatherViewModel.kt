@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 import android.util.Log
 import kotlin.math.abs
@@ -268,6 +269,10 @@ class WeatherViewModel @Inject constructor(
                 historicalHourlyForecast = emptyList(),
                 historyMonthSummary = null,
                 historyDaySummary = null,
+                historicalDayAiDescription = null,
+                historicalDayAiDescriptionError = null,
+                climateComparison = null,
+                climateComparisonError = null,
                 archiveCitySearchQuery = "",
                 archiveCitySearchResults = emptyList(),
                 archiveCitySearchError = null,
@@ -303,6 +308,10 @@ class WeatherViewModel @Inject constructor(
                 historicalHourlyForecast = emptyList(),
                 historyMonthSummary = null,
                 historyDaySummary = null,
+                historicalDayAiDescription = null,
+                historicalDayAiDescriptionError = null,
+                climateComparison = null,
+                climateComparisonError = null,
                 data = null,
                 error = null
             )
@@ -336,6 +345,10 @@ class WeatherViewModel @Inject constructor(
                 historyDaySummary = null,
                 availableHistoryDays = emptyList(),
                 availableHistoryMonths = emptyList(),
+                historicalDayAiDescription = null,
+                historicalDayAiDescriptionError = null,
+                climateComparison = null,
+                climateComparisonError = null,
                 error = null
             )
         }
@@ -492,6 +505,10 @@ class WeatherViewModel @Inject constructor(
                         historicalHourlyForecast = emptyList(),
                         historyMonthSummary = null,
                         historyDaySummary = null,
+                        historicalDayAiDescription = null,
+                        historicalDayAiDescriptionError = null,
+                        climateComparison = null,
+                        climateComparisonError = null,
                         error = null
                     )
                 }
@@ -618,6 +635,220 @@ class WeatherViewModel @Inject constructor(
                 historyDaySummary = daySummary
             )
         }
+
+        if (daySummary != null) {
+            generateHistoricalDayAiDescription(
+                dayKey = dayKey,
+                summary = daySummary,
+                hourlyItems = hourlyItems
+            )
+
+            viewModelScope.launch {
+                delay(2500L)
+
+                if (_state.value.selectedHistoryDay == dayKey) {
+                    loadClimateComparison(
+                        selectedDayKey = dayKey,
+                        selectedSummary = daySummary
+                    )
+                }
+            }
+        }
+    }
+
+    private fun generateHistoricalDayAiDescription(
+        dayKey: String,
+        summary: HistoryDaySummaryUi,
+        hourlyItems: List<HourlyForecastItemUi>
+    ) {
+        val prompt = """
+            Scrie o descriere naturala, in limba romana, pentru ziua meteo selectata.
+            Incepe cu aspectul fizic al vremii: cum arata cerul, daca a fost senin, noros, innorat, ploios, cu ceata sau variabil.
+            Foloseste evolutia pe ore ca sa descrii schimbarea vremii de-a lungul zilei.
+            Dupa descrierea vizuala, mentioneaza pe scurt temperatura maxima, temperatura minima, umiditatea medie, presiunea medie, rasaritul si apusul.
+            Nu inventa date. Foloseste doar valorile de mai jos.
+            Maximum 4 propozitii.
+
+            Data: ${summary.dateLabel}
+            Temperatura maxima: ${summary.maxTemperature}
+            Temperatura minima: ${summary.minTemperature}
+            Umiditate medie: ${summary.averageHumidity}
+            Presiune medie: ${summary.averagePressure}
+            Rasarit: ${summary.sunrise ?: "-"}
+            Apus: ${summary.sunset ?: "-"}
+            Evolutie pe ore reprezentative: ${
+                hourlyItems
+                    .filter { it.time in listOf("07:00", "10:00", "13:00", "16:00", "19:00", "22:00") }
+                    .ifEmpty { hourlyItems.take(6) }
+                    .joinToString { item ->
+                        "${item.time}: ${item.temperature}, cod meteo ${item.weatherCode}, nori ${item.cloudCover}%"
+                    }
+            }
+        """.trimIndent()
+
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    historicalDayAiDescription = null,
+                    isHistoricalDayAiDescriptionLoading = true,
+                    historicalDayAiDescriptionError = null
+                )
+            }
+
+            try {
+                val text = generateAiResponse.local(prompt, aiSettingsStore.getServerUrl()).trim()
+
+                if (text.startsWith("Backend error:", ignoreCase = true)) {
+                    error("Serviciul AI este momentan ocupat. Reincearca peste cateva secunde.")
+                }
+
+                _state.update {
+                    it.copy(
+                        historicalDayAiDescription = text,
+                        isHistoricalDayAiDescriptionLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isHistoricalDayAiDescriptionLoading = false,
+                        historicalDayAiDescriptionError = "Nu am putut genera descrierea AI."
+                    )
+                }
+            }
+        }
+    }
+
+    private fun resolveComparisonDate(selectedDate: LocalDate): LocalDate {
+        val latestAvailableDate = LocalDate.now().minusDays(1)
+        val candidate2026 = LocalDate.of(2026, selectedDate.month, selectedDate.dayOfMonth)
+
+        return if (!candidate2026.isAfter(latestAvailableDate)) {
+            candidate2026
+        } else {
+            LocalDate.of(2025, selectedDate.month, selectedDate.dayOfMonth)
+        }
+    }
+
+    private fun loadClimateComparison(
+        selectedDayKey: String,
+        selectedSummary: HistoryDaySummaryUi
+    ) {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    climateComparison = null,
+                    isClimateComparisonLoading = true,
+                    climateComparisonError = null
+                )
+            }
+
+            try {
+                val selectedDate = LocalDate.parse(selectedDayKey)
+                val comparisonDate = resolveComparisonDate(selectedDate)
+                val comparisonMonthKey = comparisonDate.toString().take(7)
+
+                val selectedCity = weatherRepository.archiveCities.firstOrNull {
+                    it.name == _state.value.selectedArchiveCity
+                } ?: weatherRepository.buildDynamicArchiveCity(
+                    name = _state.value.selectedArchiveCity,
+                    latitude = _state.value.selectedArchiveLatitude,
+                    longitude = _state.value.selectedArchiveLongitude,
+                    timezone = _state.value.selectedArchiveTimezone
+                )
+
+                val comparisonResponse = withContext(Dispatchers.IO) {
+                    weatherRepository.getHistoricalForecastForCity(
+                        city = selectedCity,
+                        monthKey = comparisonMonthKey,
+                        source = "API"
+                    )
+                }
+
+                val hourly = comparisonResponse.hourly ?: error("Nu există date orare pentru comparație.")
+                val comparisonDayKey = comparisonDate.toString()
+
+                val indexes = hourly.time.indices.filter {
+                    hourly.time[it].startsWith(comparisonDayKey)
+                }
+
+                if (indexes.isEmpty()) {
+                    error("Nu există date pentru ${formatHistoryDayLabel(comparisonDayKey)}.")
+                }
+
+                val comparisonSummary = buildHistoryDaySummary(
+                    dayKey = comparisonDayKey,
+                    indexes = indexes,
+                    hourly = hourly,
+                    dayNightStats = computeDailyDayNightStats(hourly)[comparisonDayKey],
+                    response = comparisonResponse
+                ) ?: error("Nu am putut calcula comparația.")
+
+                val aiPrompt = buildClimateComparisonPrompt(
+                    selectedSummary = selectedSummary,
+                    comparisonSummary = comparisonSummary
+                )
+
+                val aiText = generateAiResponse.local(aiPrompt, aiSettingsStore.getServerUrl()).trim()
+
+                if (aiText.startsWith("Backend error:", ignoreCase = true)) {
+                    error("Serviciul AI este momentan ocupat. Reincearca peste cateva secunde.")
+                }
+
+                _state.update {
+                    it.copy(
+                        isClimateComparisonLoading = false,
+                        climateComparison = ClimateComparisonUi(
+                            selectedDateLabel = selectedSummary.dateLabel,
+                            comparisonDateLabel = comparisonSummary.dateLabel,
+                            selectedMaxTemperature = selectedSummary.maxTemperature,
+                            comparisonMaxTemperature = comparisonSummary.maxTemperature,
+                            selectedMinTemperature = selectedSummary.minTemperature,
+                            comparisonMinTemperature = comparisonSummary.minTemperature,
+                            selectedAverageHumidity = selectedSummary.averageHumidity,
+                            comparisonAverageHumidity = comparisonSummary.averageHumidity,
+                            selectedAveragePressure = selectedSummary.averagePressure,
+                            comparisonAveragePressure = comparisonSummary.averagePressure,
+                            aiDescription = aiText
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isClimateComparisonLoading = false,
+                        climateComparisonError = e.message ?: "Nu am putut încărca comparația climatică."
+                    )
+                }
+            }
+        }
+    }
+
+    private fun buildClimateComparisonPrompt(
+        selectedSummary: HistoryDaySummaryUi,
+        comparisonSummary: HistoryDaySummaryUi
+    ): String {
+        return """
+            Compara pe scurt doua zile meteo, in limba romana.
+            Incepe cu diferenta de aspect fizic al vremii: care zi a parut mai senina, mai innorata, mai umeda, mai apasatoare sau mai stabila.
+            Apoi compara temperatura maxima, temperatura minima, umiditatea medie si presiunea medie.
+            Nu inventa date. Foloseste doar valorile de mai jos.
+            Maximum 4 propozitii.
+
+            Zi selectata:
+            Data: ${selectedSummary.dateLabel}
+            Max: ${selectedSummary.maxTemperature}
+            Min: ${selectedSummary.minTemperature}
+            Umiditate medie: ${selectedSummary.averageHumidity}
+            Presiune medie: ${selectedSummary.averagePressure}
+
+            Zi de comparatie:
+            Data: ${comparisonSummary.dateLabel}
+            Max: ${comparisonSummary.maxTemperature}
+            Min: ${comparisonSummary.minTemperature}
+            Umiditate medie: ${comparisonSummary.averageHumidity}
+            Presiune medie: ${comparisonSummary.averagePressure}
+        """.trimIndent()
     }
 
     private fun buildAvailableHistoryMonthsFromResponse(
@@ -1681,6 +1912,10 @@ class WeatherViewModel @Inject constructor(
                 historicalHourlyForecast = emptyList(),
                 historyMonthSummary = null,
                 historyDaySummary = null,
+                historicalDayAiDescription = null,
+                historicalDayAiDescriptionError = null,
+                climateComparison = null,
+                climateComparisonError = null,
                 data = null,
                 error = null
             )

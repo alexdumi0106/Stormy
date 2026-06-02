@@ -26,4 +26,43 @@ class OllamaAiRepository @Inject constructor() : AiRepository {
 
         return api.generate(OllamaRequest(prompt)).response
     }
+
+    override suspend fun generateLocal(prompt: String, serverUrl: String): String {
+        val client = OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(1000, TimeUnit.SECONDS)
+            .writeTimeout(120, TimeUnit.SECONDS)
+            .callTimeout(1000, TimeUnit.SECONDS)
+            .build()
+
+        val api = Retrofit.Builder()
+            .baseUrl(serverUrl)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(OllamaApiService::class.java)
+
+        return api.generateLocal(OllamaRequest(prompt)).response
+    }
+
+    override suspend fun generateSkyObservation(
+        request: SkyObservationRequest,
+        serverUrl: String
+    ): String {
+        val client = OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(1000, TimeUnit.SECONDS)
+            .writeTimeout(120, TimeUnit.SECONDS)
+            .callTimeout(1000, TimeUnit.SECONDS)
+            .build()
+
+        val api = Retrofit.Builder()
+            .baseUrl(serverUrl)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(OllamaApiService::class.java)
+
+        return api.generateSkyObservation(request).response
+    }
 }

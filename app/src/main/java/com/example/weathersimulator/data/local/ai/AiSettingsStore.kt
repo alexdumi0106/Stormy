@@ -19,6 +19,7 @@ class AiSettingsStore @Inject constructor(
             savedUrl.contains("10.0.2.2") -> DEFAULT_SERVER_URL
             savedUrl.contains("127.0.0.1") -> DEFAULT_SERVER_URL
             savedUrl.contains("localhost") -> DEFAULT_SERVER_URL
+            savedUrl.contains("192.168.100.80") -> DEFAULT_SERVER_URL
             else -> savedUrl
         }
 
@@ -34,6 +35,6 @@ class AiSettingsStore @Inject constructor(
     companion object {
         private const val PREFS_NAME = "ai_settings"
         private const val KEY_SERVER_URL = "server_url"
-        private const val DEFAULT_SERVER_URL = "http://192.168.100.80:8000/"
+        private const val DEFAULT_SERVER_URL = "http://172.20.10.2:8000/"
     }
 }

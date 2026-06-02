@@ -8,4 +8,14 @@ interface OllamaApiService {
     suspend fun generate(
         @Body body: OllamaRequest
     ): OllamaResponse
+
+    @POST("generate-local")
+    suspend fun generateLocal(
+        @Body body: OllamaRequest
+    ): OllamaResponse
+
+    @POST("ai/sky-observation")
+    suspend fun generateSkyObservation(
+        @Body body: SkyObservationRequest
+    ): OllamaResponse
 }
