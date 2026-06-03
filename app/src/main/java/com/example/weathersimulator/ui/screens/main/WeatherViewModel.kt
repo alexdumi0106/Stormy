@@ -602,6 +602,18 @@ class WeatherViewModel @Inject constructor(
         val dayIndexes = (0 until size)
             .filter { hourly.time[it].startsWith(dayKey) }
 
+        _state.update {
+            it.copy(
+                selectedHistoryDay = dayKey,
+                historicalDayAiDescription = null,
+                isHistoricalDayAiDescriptionLoading = false,
+                historicalDayAiDescriptionError = null,
+                climateComparison = null,
+                isClimateComparisonLoading = false,
+                climateComparisonError = null
+            )
+        }
+
         val hourlyItems = dayIndexes.map { index ->
             HourlyForecastItemUi(
                 time = formatHour(hourly.time[index]),
@@ -616,7 +628,7 @@ class WeatherViewModel @Inject constructor(
             )
         }
 
-        val dayNightStats = computeDailyDayNightStats(hourly)[dayKey]
+        val dayNightStats = computeDayNightStatsForIndexes(hourly, dayIndexes)
         val daySummary = buildHistoryDaySummary(
             dayKey = dayKey,
             indexes = dayIndexes,
@@ -1222,6 +1234,56 @@ class WeatherViewModel @Inject constructor(
                 nightMinTemperature = value.nightTemperatures.minOrNull() ?: fallbackTemp
             )
         }
+    }
+
+    private fun computeDayNightStatsForIndexes(
+        hourly: HourlyDto,
+        indexes: List<Int>
+    ): DayNightStats? {
+        if (indexes.isEmpty()) return null
+
+        val bucket = MutableDayNightStats()
+
+        indexes.forEach { index ->
+            val weatherCode = calculateStormWeatherCode(
+                currentIndex = index,
+                hourly = hourly,
+                originalWeatherCode = hourly.weatherCode[index]
+            )
+            val cloudCover = hourly.cloudCover[index]
+            val temperature = hourly.temperature[index]
+
+            if (hourly.isDay[index] == 1) {
+                bucket.dayCodes.add(weatherCode)
+                bucket.dayClouds.add(cloudCover)
+                bucket.dayTemperatures.add(temperature)
+            } else {
+                bucket.nightCodes.add(weatherCode)
+                bucket.nightClouds.add(cloudCover)
+                bucket.nightTemperatures.add(temperature)
+            }
+        }
+
+        val fallbackCode = bucket.dayCodes.firstOrNull()
+            ?: bucket.nightCodes.firstOrNull()
+            ?: 0
+
+        val fallbackCloud = bucket.dayClouds.firstOrNull()
+            ?: bucket.nightClouds.firstOrNull()
+            ?: 100
+
+        val fallbackTemp = bucket.dayTemperatures.maxOrNull()
+            ?: bucket.nightTemperatures.maxOrNull()
+            ?: 0.0
+
+        return DayNightStats(
+            dayWeatherCode = bucket.dayCodes.withRainPriorityOr(fallbackCode),
+            dayCloudCover = bucket.dayClouds.averageIntOr(fallbackCloud),
+            dayMaxTemperature = bucket.dayTemperatures.maxOrNull() ?: fallbackTemp,
+            nightWeatherCode = bucket.nightCodes.withRainPriorityOr(fallbackCode),
+            nightCloudCover = bucket.nightClouds.averageIntOr(fallbackCloud),
+            nightMinTemperature = bucket.nightTemperatures.minOrNull() ?: fallbackTemp
+        )
     }
 
     private fun computeDailyCloudCover(

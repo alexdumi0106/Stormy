@@ -41,9 +41,11 @@ import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.PhotoCamera
 import androidx.compose.material.icons.rounded.PhotoLibrary
+import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Thunderstorm
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.WbSunny
@@ -78,6 +80,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -85,6 +88,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.weathersimulator.R
 import kotlin.math.roundToInt
 
 private val ScreenBackground = Color(0xFF061829)
@@ -150,103 +154,161 @@ fun SkyAnalyzerScreen(
         }
     }
 
-    Scaffold(
-        containerColor = ScreenBackground,
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "Camera Sky Analyzer",
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-                        )
-                        Text(
-                            text = "AI local pentru cer si fotografie",
-                            color = Color.White.copy(alpha = 0.72f),
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Inapoi",
-                            tint = Color.White
-                        )
-                    }
-                },
-                actions = {
-                    Icon(
-                        imageVector = Icons.Rounded.AutoAwesome,
-                        contentDescription = null,
-                        tint = YellowAccent,
-                        modifier = Modifier.padding(end = 16.dp)
-                    )
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = ScreenBackground,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White,
-                    actionIconContentColor = YellowAccent
-                )
-            )
-        }
-    ) { padding ->
-        Column(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.sky_analyzer_background),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
                         listOf(
-                            ScreenBackground,
-                            Color(0xFF06233B),
-                            Color(0xFF082B47)
+                            Color(0xFF020916).copy(alpha = 0.32f),
+                            Color(0xFF031B34).copy(alpha = 0.08f),
+                            Color(0xFF021221).copy(alpha = 0.46f)
                         )
                     )
                 )
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 8.dp, vertical = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            SkyPhotoHero(
-                state = state,
-                onCameraClick = ::openCamera,
-                onGalleryClick = { galleryLauncher.launch("image/*") }
-            )
+        )
 
-            state.result?.let { result ->
-                PhotographyScoreCard(result = result)
-                SkyDetailsCard(result = result)
-                CloudStructureCard(result = result)
-                PhenomenaCard(result = result)
-                EvolutionCard(result = result)
-                AiObservationCard(
-                    result = result,
-                    isLoading = state.isGeneratingAiObservation,
-                    error = state.aiObservationError
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "Camera Sky Analyzer",
+                                color = Color.White,
+                                fontSize = 23.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                maxLines = 1
+                            )
+                            Text(
+                                text = "AI local pentru cer și fotografie",
+                                color = Color.White.copy(alpha = 0.74f),
+                                fontSize = 14.sp,
+                                maxLines = 1
+                            )
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = onBack,
+                            modifier = Modifier
+                                .padding(start = 14.dp)
+                                .size(56.dp)
+                                .clip(RoundedCornerShape(22.dp))
+                                .background(Color(0xFF142846).copy(alpha = 0.82f))
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Inapoi",
+                                tint = Color.White,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    },
+                    actions = {
+                        Box(
+                            modifier = Modifier
+                                .padding(end = 14.dp)
+                                .size(56.dp)
+                                .clip(RoundedCornerShape(22.dp))
+                                .background(Color(0xFF142846).copy(alpha = 0.82f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.AutoAwesome,
+                                contentDescription = null,
+                                tint = YellowAccent,
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = Color.Transparent,
+                        titleContentColor = Color.White,
+                        navigationIconContentColor = Color.White,
+                        actionIconContentColor = YellowAccent
+                    )
                 )
             }
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 30.dp, vertical = 30.dp),
+                verticalArrangement = Arrangement.spacedBy(22.dp)
+            ) {
+                SkyPhotoHero(state = state)
 
-            Spacer(Modifier.height(8.dp))
+                SkyAnalyzerActionTiles(
+                    onGalleryClick = { galleryLauncher.launch("image/*") },
+                    onCameraClick = ::openCamera
+                )
+
+                Box(modifier = Modifier.padding(top = 120.dp)) {
+                    SkyPrivacyCard()
+                }
+
+                state.permissionMessage?.let { message ->
+                    Text(
+                        text = message,
+                        color = Color(0xFFFFD5D5),
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                }
+
+                state.result?.let { result ->
+                    PhotographyScoreCard(result = result)
+                    SkyDetailsCard(result = result)
+                    CloudStructureCard(result = result)
+                    PhenomenaCard(result = result)
+                    EvolutionCard(result = result)
+                    AiObservationCard(
+                        result = result,
+                        isLoading = state.isGeneratingAiObservation,
+                        error = state.aiObservationError
+                    )
+                }
+
+                Spacer(Modifier.height(8.dp))
+            }
         }
     }
 }
 
 @Composable
 private fun SkyPhotoHero(
-    state: SkyAnalyzerUiState,
-    onCameraClick: () -> Unit,
-    onGalleryClick: () -> Unit
+    state: SkyAnalyzerUiState
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(178.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(CardBackgroundSoft)
+            .height(300.dp)
+            .clip(RoundedCornerShape(28.dp))
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF0A315C).copy(alpha = 0.86f),
+                        Color(0xFF061D36).copy(alpha = 0.96f),
+                        Color(0xFF020B17).copy(alpha = 0.99f)
+                    )
+                )
+            )
+            .border(
+                BorderStroke(1.2.dp, Color(0xFF6A8FD0).copy(alpha = 0.42f)),
+                RoundedCornerShape(28.dp)
+            )
     ) {
         if (state.photo != null) {
             Image(
@@ -256,30 +318,33 @@ private fun SkyPhotoHero(
                 contentScale = ContentScale.Crop
             )
         } else {
-            EmptyPhotoPlaceholder(
-                onCameraClick = onCameraClick,
-                onGalleryClick = onGalleryClick
-            )
+            EmptyPhotoPlaceholder()
         }
 
         if (state.photo != null) {
-            Row(
+            Box(
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                HeroActionButton(
-                    text = "Galerie",
-                    icon = Icons.Rounded.PhotoLibrary,
-                    onClick = onGalleryClick
-                )
-                HeroActionButton(
-                    text = "Refa fotografia",
-                    icon = Icons.Rounded.PhotoCamera,
-                    onClick = onCameraClick
-                )
-            }
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(132.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.74f)
+                            )
+                        )
+                    )
+            )
+            Text(
+                text = "Fotografie selectată",
+                color = Color.White,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp)
+            )
         }
 
         if (state.isAnalyzing) {
@@ -296,77 +361,236 @@ private fun SkyPhotoHero(
             }
         }
     }
+}
 
-    state.permissionMessage?.let { message ->
+@Composable
+private fun EmptyPhotoPlaceholder() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 22.dp, vertical = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        Box(
+            modifier = Modifier
+                .size(92.dp)
+                .background(
+                    Brush.radialGradient(
+                        listOf(
+                            Color(0xFF7DB5FF).copy(alpha = 0.34f),
+                            Color.Transparent
+                        )
+                    )
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Cloud,
+                contentDescription = null,
+                tint = Color(0xFFD8E7FF),
+                modifier = Modifier.size(68.dp)
+            )
+        }
+        Spacer(Modifier.height(8.dp))
         Text(
-            text = message,
-            color = Color(0xFFFFD5D5),
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            text = "Analizează cerul",
+            color = Color.White,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.ExtraBold,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(12.dp))
+        Text(
+            text = "Încarcă o fotografie pentru a obține\ninformații meteo precise",
+            color = Color.White.copy(alpha = 0.73f),
+            fontSize = 17.sp,
+            lineHeight = 24.sp,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(10.dp))
+        PhoneCameraMockup()
+    }
+}
+
+@Composable
+private fun PhoneCameraMockup() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(0.94f)
+            .height(68.dp)
+    ) {
+        Surface(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(horizontal = 12.dp, vertical = 0.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(28.dp),
+            color = Color(0xFF07111F).copy(alpha = 0.88f)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(9.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Lightbulb,
+                    contentDescription = null,
+                    tint = YellowAccent,
+                    modifier = Modifier.size(26.dp)
+                )
+                Text(
+                    text = "Sfat: fotografiază cerul într-un loc\ndeschis pentru rezultate mai bune",
+                    color = Color.White.copy(alpha = 0.84f),
+                    fontSize = 12.sp,
+                    lineHeight = 16.sp,
+                    maxLines = 2
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SkyAnalyzerActionTiles(
+    onGalleryClick: () -> Unit,
+    onCameraClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        SkyAnalyzerActionTile(
+            title = "Galerie",
+            subtitle = "Alege din galerie",
+            icon = Icons.Rounded.PhotoLibrary,
+            onClick = onGalleryClick,
+            modifier = Modifier.weight(1f),
+            brush = Brush.verticalGradient(
+                listOf(
+                    Color(0xFF082044).copy(alpha = 0.96f),
+                    Color(0xFF020B17).copy(alpha = 0.96f)
+                )
+            )
+        )
+
+        SkyAnalyzerActionTile(
+            title = "Cameră",
+            subtitle = "Fă o fotografie",
+            icon = Icons.Rounded.PhotoCamera,
+            onClick = onCameraClick,
+            modifier = Modifier.weight(1f),
+            brush = Brush.linearGradient(
+                listOf(
+                    Color(0xFF42B8FF),
+                    Color(0xFF135BFF),
+                    Color(0xFF052B9B)
+                )
+            )
         )
     }
 }
 
 @Composable
-private fun EmptyPhotoPlaceholder(
-    onCameraClick: () -> Unit,
-    onGalleryClick: () -> Unit
+private fun SkyAnalyzerActionTile(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    brush: Brush
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0E385A),
-                        Color(0xFF061829)
-                    )
-                )
+    Box(
+        modifier = modifier
+            .height(136.dp)
+            .clip(RoundedCornerShape(22.dp))
+            .background(brush)
+            .border(
+                BorderStroke(1.dp, Color.White.copy(alpha = 0.14f)),
+                RoundedCornerShape(22.dp)
             )
-            .padding(18.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
     ) {
-        Icon(
-            imageVector = Icons.Rounded.Cloud,
-            contentDescription = null,
-            tint = Color.White.copy(alpha = 0.82f),
-            modifier = Modifier.size(46.dp)
-        )
-        Spacer(Modifier.height(12.dp))
-        Text(
-            text = "Adauga o fotografie a cerului",
-            color = Color.White,
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-        )
-        Spacer(Modifier.height(14.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(
-                onClick = onGalleryClick,
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White.copy(alpha = 0.14f),
-                    contentColor = Color.White
-                ),
-                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.24f)),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(58.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(Color.White.copy(alpha = 0.14f)),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Rounded.PhotoLibrary, contentDescription = null, modifier = Modifier.size(17.dp))
-                Spacer(Modifier.width(6.dp))
-                Text("Galerie")
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(34.dp)
+                )
             }
-            Button(
-                onClick = onCameraClick,
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BlueAccent,
-                    contentColor = Color.White
-                ),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+            Spacer(Modifier.height(14.dp))
+            Text(
+                text = title,
+                color = Color.White,
+                fontSize = 23.sp,
+                fontWeight = FontWeight.ExtraBold,
+                maxLines = 1
+            )
+            Spacer(Modifier.height(5.dp))
+            Text(
+                text = subtitle,
+                color = Color.White.copy(alpha = 0.70f),
+                fontSize = 15.sp,
+                maxLines = 1
+            )
+        }
+    }
+}
+
+@Composable
+private fun SkyPrivacyCard() {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        color = Color(0xFF243A5A).copy(alpha = 0.78f),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.10f))
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 17.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(Color(0xFF2F7B69).copy(alpha = 0.82f)),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Rounded.PhotoCamera, contentDescription = null, modifier = Modifier.size(17.dp))
-                Spacer(Modifier.width(6.dp))
-                Text("Camera")
+                Icon(
+                    imageVector = Icons.Rounded.Security,
+                    contentDescription = null,
+                    tint = Color(0xFF2AFF9A),
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Confidențialitate garantată",
+                    color = Color.White,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    maxLines = 1
+                )
+                Spacer(Modifier.height(5.dp))
+                Text(
+                    text = "Fotografiile tale rămân pe dispozitivul tău\nși nu sunt stocate sau distribuite.",
+                    color = Color.White.copy(alpha = 0.70f),
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp
+                )
             }
         }
     }

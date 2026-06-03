@@ -45,6 +45,8 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,15 +78,25 @@ fun WeatherHistoryDayScreen(
         containerColor = Color(0xFF10243A),
         topBar = {
             TopAppBar(
-                title = { Text("Detalii istoric meteo") },
+                title = {
+                    Text(
+                        text = "Detalii istoric meteo",
+                        color = Color.White,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color.White
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF182A45)
+                )
             )
         }
     ) { padding ->
@@ -111,18 +123,25 @@ fun WeatherHistoryDayScreen(
             ) {
                 item {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF26384C).copy(alpha = 0.95f)),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF26384C).copy(alpha = 0.92f)
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(
-                            modifier = Modifier.padding(18.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(18.dp)
                         ) {
-                            Text(
-                                text = "Alege ziua direct din calendarul lunii selectate.",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = Color.White
-                            )
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text(
+                                    text = "Selectează o dată din calendar și explorează istoricul meteo în detaliu.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color(0xFFBEE7FF)
+                                )
+                            }
                         }
                     }
                 }

@@ -75,6 +75,7 @@ fun WeatherHistoryScreen(
     var selectedYear by rememberSaveable { mutableStateOf<String?>(state.selectedHistoryMonth?.substring(0, 4)) }
     var selectedMonthKey by rememberSaveable { mutableStateOf<String?>(state.selectedHistoryMonth) }
     var isMonthSelectionConfirmed by rememberSaveable { mutableStateOf(state.selectedHistoryMonth != null) }
+    var pendingOpenMonthKey by rememberSaveable { mutableStateOf<String?>(null) }
     var cityExpanded by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val availableYears = remember(state.availableHistoryMonths) {
@@ -103,6 +104,24 @@ fun WeatherHistoryScreen(
             selectedYear = selectedKey.substring(0, 4)
             selectedMonthKey = selectedKey
             isMonthSelectionConfirmed = true
+        }
+    }
+
+    LaunchedEffect(
+        pendingOpenMonthKey,
+        state.selectedHistoryMonth,
+        state.availableHistoryDays,
+        state.isLoading
+    ) {
+        val pendingMonth = pendingOpenMonthKey ?: return@LaunchedEffect
+
+        val daysAreReady =
+            state.selectedHistoryMonth == pendingMonth &&
+                state.availableHistoryDays.any { it.key.startsWith(pendingMonth) }
+
+        if (!state.isLoading && daysAreReady) {
+            pendingOpenMonthKey = null
+            onOpenSelectedDay()
         }
     }
 
@@ -395,13 +414,11 @@ fun WeatherHistoryScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(
-                                modifier = Modifier.padding(16.dp),
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
 
                                 if (state.selectedArchiveCity == "Timișoara") {
-
-                                    Spacer(modifier = Modifier.height(12.dp))
 
                                     Card(
                                         colors = CardDefaults.cardColors(
@@ -734,9 +751,24 @@ fun WeatherHistoryScreen(
                         }
 
                         Button(
-                            onClick = onOpenSelectedDay,
+                            onClick = {
+                                val monthKey = selectedMonthKey
+
+                                if (monthKey != null) {
+                                    val daysAreReady =
+                                        state.selectedHistoryMonth == monthKey &&
+                                            state.availableHistoryDays.any { it.key.startsWith(monthKey) }
+
+                                    if (daysAreReady) {
+                                        onOpenSelectedDay()
+                                    } else {
+                                        pendingOpenMonthKey = monthKey
+                                        onMonthSelected(monthKey)
+                                    }
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth(),
-                            enabled = isMonthSelectionConfirmed && state.selectedHistoryMonth != null,
+                            enabled = isMonthSelectionConfirmed && selectedMonthKey != null && !state.isLoading,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFF3D6FA6),
                                 disabledContainerColor = Color(0xFF5F6F86),
