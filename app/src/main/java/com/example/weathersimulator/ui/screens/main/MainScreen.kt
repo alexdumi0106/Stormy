@@ -89,6 +89,7 @@ import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.PhotoCamera
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.SportsEsports
 import androidx.compose.material.icons.rounded.WbSunny
 import com.example.weathersimulator.data.remote.city.CityResultDto
 import com.example.weathersimulator.data.local.city.FavoriteCityEntity
@@ -121,7 +122,8 @@ fun WeatherHomeSection(
     onWeatherDataClick: () -> Unit,
     onSkyAnalyzerClick: () -> Unit,
     onOutfitAiClick: () -> Unit,
-    onNatureImpactClick: () -> Unit
+    onNatureImpactClick: () -> Unit,
+    onWeatherGamesClick: () -> Unit
 ) {
     val cityName = locationName.substringBefore(",").ifBlank { "Locația ta" }
     var showQuickMenu by remember { mutableStateOf(false) }
@@ -258,6 +260,22 @@ fun WeatherHomeSection(
                         onClick = {
                             showQuickMenu = false
                             onNatureImpactClick()
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text("Jocuri", color = Color.White) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Rounded.SportsEsports,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        },
+                        colors = MenuDefaults.itemColors(textColor = Color.White),
+                        onClick = {
+                            showQuickMenu = false
+                            onWeatherGamesClick()
                         }
                     )
                 }
@@ -523,6 +541,10 @@ fun MainScreen(navController: NavController) {
         navController.navigate(Routes.NATURE_IMPACT)
     }
 
+    val openWeatherGames = {
+        navController.navigate(Routes.WEATHER_GAMES)
+    }
+
    Scaffold(
         containerColor = Color.Transparent,
         bottomBar = {
@@ -587,7 +609,8 @@ fun MainScreen(navController: NavController) {
                     onWeatherDataClick = openWeatherHistory,
                     onSkyAnalyzerClick = openSkyAnalyzer,
                     onOutfitAiClick = openOutfitAi,
-                    onNatureImpactClick = openNatureImpact
+                    onNatureImpactClick = openNatureImpact,
+                    onWeatherGamesClick = openWeatherGames
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }

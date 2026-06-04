@@ -24,6 +24,9 @@ import com.example.weathersimulator.ui.screens.main.WeatherViewModel
 import com.example.weathersimulator.ui.screens.skyanalyzer.SkyAnalyzerScreen
 import com.example.weathersimulator.ui.screens.outfit.OutfitRecommendationScreen
 import com.example.weathersimulator.ui.screens.nature.NatureImpactScreen
+import com.example.weathersimulator.ui.screens.games.CloudCatcherScreen
+import com.example.weathersimulator.ui.screens.games.WeatherGamesScreen
+import com.example.weathersimulator.ui.screens.games.memory.WeatherMemoryScreen
 
 
 @Composable
@@ -164,6 +167,32 @@ fun AppNavigation() {
                 NatureImpactScreen(
                     state = state,
                     cityName = state.selectedCityName,
+                    onBack = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable(Routes.WEATHER_GAMES) {
+            WeatherSimulatorTheme(darkTheme = false, dynamicColor = false) {
+                WeatherGamesScreen(
+                    onBack = { navController.popBackStack() },
+                    onCloudCatcherClick = { navController.navigate(Routes.CLOUD_CATCHER) },
+                    onWeatherMemoryClick = { navController.navigate(Routes.WEATHER_MEMORY) }
+                )
+            }
+        }
+
+        composable(Routes.CLOUD_CATCHER) {
+            WeatherSimulatorTheme(darkTheme = false, dynamicColor = false) {
+                CloudCatcherScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable(Routes.WEATHER_MEMORY) {
+            WeatherSimulatorTheme(darkTheme = false, dynamicColor = false) {
+                WeatherMemoryScreen(
                     onBack = { navController.popBackStack() }
                 )
             }
