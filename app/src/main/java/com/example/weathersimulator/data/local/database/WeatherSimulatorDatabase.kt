@@ -32,16 +32,16 @@ abstract class WeatherSimulatorDatabase : RoomDatabase() {
 }
 
 val MIGRATION_3_4 = object : Migration(3, 4) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL(
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
             "ALTER TABLE ai_conversations ADD COLUMN userId TEXT NOT NULL DEFAULT 'guest'"
         )
     }
 }
 
 val MIGRATION_4_5 = object : Migration(4, 5) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL(
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
             """
             CREATE TABLE IF NOT EXISTS favorite_cities (
                 id TEXT NOT NULL PRIMARY KEY,

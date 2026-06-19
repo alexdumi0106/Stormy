@@ -459,6 +459,7 @@ private fun buildMonthGrid(yearMonth: YearMonth): List<LocalDate?> {
         DayOfWeek.FRIDAY -> 4
         DayOfWeek.SATURDAY -> 5
         DayOfWeek.SUNDAY -> 6
+        null -> 0
     }
 
     val cells = mutableListOf<LocalDate?>()

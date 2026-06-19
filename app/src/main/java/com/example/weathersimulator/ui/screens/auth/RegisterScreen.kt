@@ -165,10 +165,10 @@ fun RegisterScreen(
                         visualTransformation = PasswordVisualTransformation()
                     )
 
-                    if (state.error != null) {
+                    state.error?.let { error ->
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = state.error!!,
+                            text = error,
                             color = MaterialTheme.colorScheme.error,
                             fontSize = 13.sp
                         )

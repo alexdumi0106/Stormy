@@ -77,6 +77,7 @@ kapt {
 
     javacOptions {
         option("-Xlint:-options")
+        option("-Xlint:-processing")
     }
 }
 

@@ -136,10 +136,10 @@ fun LoginScreen(
                         visualTransformation = PasswordVisualTransformation()
                     )
 
-                    if (state.error != null) {
+                    state.error?.let { error ->
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = state.error!!,
+                            text = error,
                             color = Color(0xFFFFD6D6),
                             fontSize = 13.sp
                         )

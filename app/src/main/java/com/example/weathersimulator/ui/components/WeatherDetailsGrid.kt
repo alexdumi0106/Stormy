@@ -18,24 +18,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weathersimulator.data.remote.weather.OpenMeteoResponse
 import java.util.Calendar
-import java.util.Locale
 import kotlin.math.roundToInt
-import kotlin.math.asin
-import kotlin.math.atan
-import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.ln
-import kotlin.math.sin
-import kotlin.math.tan
 import kotlin.math.PI
 import androidx.compose.ui.Alignment
 
 @Composable
 fun WeatherDetailsGrid(
     data: OpenMeteoResponse?,
-    latitude: Double = 0.0,
-    longitude: Double = 0.0,
     modifier: Modifier = Modifier
 ) {
     if (data == null) return
@@ -279,86 +271,6 @@ private fun calculateMoonPhase(calendar: Calendar): MoonPhaseInfo {
     }
 
     return MoonPhaseInfo(name = name, illuminationPercent = illumination)
-}
-
-private fun minutesToClock(totalMinutes: Int): String {
-    val normalized = ((totalMinutes % 1440) + 1440) % 1440
-    val h = normalized / 60
-    val m = normalized % 60
-    return String.format(Locale.getDefault(), "%02d:%02d", h, m)
-}
-
-private fun normalizeDegrees(value: Double): Double {
-    var result = value % 360.0
-    if (result < 0) result += 360.0
-    return result
-}
-
-private fun calculateSunEventMinutes(
-    dayOfYear: Int,
-    latitude: Double,
-    longitude: Double,
-    utcOffsetHours: Double,
-    isSunrise: Boolean
-): Int? {
-    val lngHour = longitude / 15.0
-    val approxTime = if (isSunrise) {
-        dayOfYear + (6.0 - lngHour) / 24.0
-    } else {
-        dayOfYear + (18.0 - lngHour) / 24.0
-    }
-
-    val meanAnomaly = 0.9856 * approxTime - 3.289
-    val trueLongitude = normalizeDegrees(
-        meanAnomaly + 1.916 * sin(Math.toRadians(meanAnomaly)) +
-            0.020 * sin(Math.toRadians(2 * meanAnomaly)) + 282.634
-    )
-
-    var rightAscension = Math.toDegrees(atan(0.91764 * tan(Math.toRadians(trueLongitude))))
-    rightAscension = normalizeDegrees(rightAscension)
-
-    val lQuadrant = floor(trueLongitude / 90.0) * 90.0
-    val raQuadrant = floor(rightAscension / 90.0) * 90.0
-    rightAscension += lQuadrant - raQuadrant
-    rightAscension /= 15.0
-
-    val sinDec = 0.39782 * sin(Math.toRadians(trueLongitude))
-    val cosDec = cos(asin(sinDec))
-
-    val cosH = (
-        cos(Math.toRadians(90.833)) - sinDec * sin(Math.toRadians(latitude))
-        ) / (cosDec * cos(Math.toRadians(latitude)))
-
-    if (cosH > 1 || cosH < -1) return null
-
-    var hourAngle = if (isSunrise) {
-        360.0 - Math.toDegrees(acos(cosH))
-    } else {
-        Math.toDegrees(acos(cosH))
-    }
-    hourAngle /= 15.0
-
-    val localMeanTime = hourAngle + rightAscension - 0.06571 * approxTime - 6.622
-    var utcHours = localMeanTime - lngHour
-    while (utcHours < 0) utcHours += 24.0
-    while (utcHours >= 24) utcHours -= 24.0
-
-    val localHours = utcHours + utcOffsetHours
-    val localMinutes = (localHours * 60.0).toInt()
-    return ((localMinutes % 1440) + 1440) % 1440
-}
-
-private fun calculateSunriseSunsetLocal(latitude: Double, longitude: Double, calendar: Calendar): Pair<Int?, Int?> {
-    if (latitude == 0.0 && longitude == 0.0) return Pair(null, null)
-
-    val dayOfYear = calendar.get(Calendar.DAY_OF_YEAR)
-    val offsetMillis = calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)
-    val utcOffsetHours = offsetMillis / 3_600_000.0
-
-    val sunrise = calculateSunEventMinutes(dayOfYear, latitude, longitude, utcOffsetHours, isSunrise = true)
-    val sunset = calculateSunEventMinutes(dayOfYear, latitude, longitude, utcOffsetHours, isSunrise = false)
-
-    return Pair(sunrise, sunset)
 }
 
 private fun formatApiSolarTime(value: String): String {

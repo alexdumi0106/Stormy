@@ -1,8 +1,6 @@
 package com.example.weathersimulator.ui.screens.games.cloudcatcher
 
-import androidx.compose.ui.geometry.Size
 import kotlin.math.ceil
-import kotlin.math.min
 import kotlin.random.Random
 
 internal fun CloudCatcherObject.collidesWithPlane(planeY: Float): Boolean {
@@ -114,6 +112,3 @@ internal fun Int.scoreText(): String {
         .joinToString(".")
         .reversed()
 }
-
-internal val Size.minDimension: Float
-    get() = min(width, height)

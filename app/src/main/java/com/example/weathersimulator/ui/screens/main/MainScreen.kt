@@ -110,13 +110,10 @@ fun WeatherHomeSection(
     onToggleSearch: () -> Unit,
     weatherState: WeatherUiState,
     weatherVm: WeatherViewModel,
-    isLoading: Boolean,
     error: String?,
     data: OpenMeteoResponse?,
     hourlyForecast: List<HourlyForecastItemUi>,
     dailyForecast: List<DailyForecastItemUi>,
-    latitude: Double = 0.0,
-    longitude: Double = 0.0,
     weatherStory: String?,
     isWeatherStoryLoading: Boolean,
     weatherStoryError: String?,
@@ -424,8 +421,6 @@ fun WeatherHomeSection(
 
     WeatherDetailsGrid(
         data = data,
-        latitude = latitude,
-        longitude = longitude,
         modifier = Modifier.fillMaxWidth()
     )
 }
@@ -618,13 +613,10 @@ fun MainScreen(navController: NavController) {
                     onToggleSearch = { showSearchCard = !showSearchCard },
                     weatherState = weatherState,
                     weatherVm = weatherVm,
-                    isLoading = weatherState.isLoading,
                     error = weatherState.error,
                     data = weatherState.data,
                     hourlyForecast = weatherState.hourlyForecast,
                     dailyForecast = weatherState.dailyForecast,
-                    latitude = weatherState.data?.latitude ?: s.lat ?: 0.0,
-                    longitude = weatherState.data?.longitude ?: s.lon ?: 0.0,
                     weatherStory = weatherState.weatherStory,
                     isWeatherStoryLoading = weatherState.isWeatherStoryLoading,
                     weatherStoryError = weatherState.weatherStoryError,
