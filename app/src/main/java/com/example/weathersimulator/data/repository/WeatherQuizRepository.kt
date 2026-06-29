@@ -127,20 +127,20 @@ class WeatherQuizRepository @Inject constructor(
         val fallbackQuestions = listOf(
             WeatherQuizQuestion(
                 id = "fallback_pressure",
-                question = "Ce este presiunea atmosferica?",
+                question = "Ce este presiunea atmosferică?",
                 answers = listOf(
-                    "Greutatea aerului asupra suprafetei Pamantului",
+                    "Greutatea aerului asupra suprafeței Pământului",
                     "Cantitatea de ploaie dintr-o zi",
-                    "Viteza vantului"
+                    "Viteza vântului"
                 ),
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Presiunea atmosferica reprezinta forta exercitata de coloana de aer asupra unei suprafete."
+                explanation = "Presiunea atmosferică reprezintă forța exercitată de coloana de aer asupra unei suprafețe."
             ),
             WeatherQuizQuestion(
                 id = "fallback_atmosphere_gas",
-                question = "Care este principalul gaz din atmosfera Pamantului?",
+                question = "Care este principalul gaz din atmosfera Pământului?",
                 answers = listOf(
                     "Oxigen",
                     "Azot",
@@ -149,11 +149,11 @@ class WeatherQuizRepository @Inject constructor(
                 correctIndex = 1,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Azotul reprezinta cea mai mare parte din atmosfera terestra."
+                explanation = "Azotul reprezintă cea mai mare parte din atmosfera terestră."
             ),
             WeatherQuizQuestion(
                 id = "fallback_thermometer",
-                question = "Ce instrument masoara temperatura aerului?",
+                question = "Ce instrument măsoară temperatura aerului?",
                 answers = listOf(
                     "Barometru",
                     "Termometru",
@@ -162,33 +162,33 @@ class WeatherQuizRepository @Inject constructor(
                 correctIndex = 1,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Termometrul este instrumentul folosit pentru masurarea temperaturii."
+                explanation = "Termometrul este instrumentul folosit pentru măsurarea temperaturii."
             ),
             WeatherQuizQuestion(
                 id = "fallback_rainbow",
                 question = "Ce fenomen produce curcubeul?",
                 answers = listOf(
-                    "Refractia si reflexia luminii in picaturile de apa",
+                    "Refracția și reflexia luminii în picăturile de apă",
                     "Umbra norilor",
-                    "Poluarea atmosferica"
+                    "Poluarea atmosferică"
                 ),
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Curcubeul apare cand lumina solara este refractata si reflectata in picaturile de ploaie."
+                explanation = "Curcubeul apare când lumina solară este refractată și reflectată în picăturile de ploaie."
             ),
             WeatherQuizQuestion(
                 id = "fallback_humidity_100",
-                question = "Ce indica o umiditate relativa de 100%?",
+                question = "Ce indică o umiditate relativă de 100%?",
                 answers = listOf(
                     "Aer foarte uscat",
-                    "Aer saturat cu vapori de apa",
-                    "Vant foarte puternic"
+                    "Aer saturat cu vapori de apă",
+                    "Vânt foarte puternic"
                 ),
                 correctIndex = 1,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "La 100% umiditate relativa, aerul este saturat cu vapori de apa."
+                explanation = "La 100% umiditate relativă, aerul este saturat cu vapori de apă."
             ),
             WeatherQuizQuestion(
                 id = "fallback_cumulonimbus",
@@ -201,11 +201,11 @@ class WeatherQuizRepository @Inject constructor(
                 correctIndex = 2,
                 category = "nori",
                 difficulty = "easy",
-                explanation = "Norii cumulonimbus se dezvolta vertical si pot produce furtuni, fulgere si grindina."
+                explanation = "Norii cumulonimbus se dezvoltă vertical și pot produce furtuni, fulgere și grindină."
             ),
             WeatherQuizQuestion(
                 id = "fallback_anemometer",
-                question = "Ce instrument masoara viteza vantului?",
+                question = "Ce instrument măsoară viteza vântului?",
                 answers = listOf(
                     "Anemometru",
                     "Termometru",
@@ -214,24 +214,24 @@ class WeatherQuizRepository @Inject constructor(
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Anemometrul este instrumentul utilizat pentru masurarea vitezei vantului."
+                explanation = "Anemometrul este instrumentul utilizat pentru măsurarea vitezei vântului."
             ),
             WeatherQuizQuestion(
                 id = "fallback_rain",
-                question = "Cum se numeste apa care cade din atmosfera sub forma lichida?",
+                question = "Cum se numește apa care cade din atmosferă sub formă lichidă?",
                 answers = listOf(
                     "Ninsoare",
                     "Ploaie",
-                    "Grindina"
+                    "Grindină"
                 ),
                 correctIndex = 1,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Ploaia este forma lichida a precipitatiilor."
+                explanation = "Ploaia este forma lichidă a precipitațiilor."
             ),
             WeatherQuizQuestion(
                 id = "fallback_cirrus",
-                question = "Ce tip de nor este subtire si fibros?",
+                question = "Ce tip de nor este subțire și fibros?",
                 answers = listOf(
                     "Cirrus",
                     "Cumulus",
@@ -240,11 +240,11 @@ class WeatherQuizRepository @Inject constructor(
                 correctIndex = 0,
                 category = "nori",
                 difficulty = "easy",
-                explanation = "Norii cirrus sunt subtiri, fibrosi si apar la altitudini mari."
+                explanation = "Norii cirrus sunt subțiri, fibroși și apar la altitudini mari."
             ),
             WeatherQuizQuestion(
                 id = "fallback_evaporation",
-                question = "Cum se numeste fenomenul prin care apa se transforma in vapori?",
+                question = "Cum se numește fenomenul prin care apa se transformă în vapori?",
                 answers = listOf(
                     "Condensare",
                     "Evaporare",
@@ -253,102 +253,102 @@ class WeatherQuizRepository @Inject constructor(
                 correctIndex = 1,
                 category = "climatologie",
                 difficulty = "easy",
-                explanation = "Evaporarea este procesul prin care apa lichida se transforma in vapori."
+                explanation = "Evaporarea este procesul prin care apa lichidă se transformă în vapori."
             ),
             WeatherQuizQuestion(
                 id = "fallback_anticyclone",
-                question = "Ce reprezinta un anticiclon?",
+                question = "Ce reprezintă un anticiclon?",
                 answers = listOf(
-                    "Zona cu presiune ridicata",
-                    "Zona cu presiune scazuta",
+                    "Zonă cu presiune ridicată",
+                    "Zonă cu presiune scăzută",
                     "Un tip de nor"
                 ),
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "medium",
-                explanation = "Anticiclonii sunt asociati de obicei cu vreme stabila si cer mai senin."
+                explanation = "Anticiclonii sunt asociați de obicei cu vreme stabilă și cer mai senin."
             ),
             WeatherQuizQuestion(
                 id = "fallback_cyclone",
-                question = "Ce reprezinta un ciclon?",
+                question = "Ce reprezintă un ciclon?",
                 answers = listOf(
-                    "Zona cu presiune ridicata",
-                    "Zona cu presiune scazuta",
-                    "O forma de precipitatie"
+                    "Zonă cu presiune ridicată",
+                    "Zonă cu presiune scăzută",
+                    "O formă de precipitație"
                 ),
                 correctIndex = 1,
                 category = "meteorologie",
                 difficulty = "medium",
-                explanation = "Ciclonii sunt zone cu presiune scazuta si favorizeaza formarea norilor si precipitatiilor."
+                explanation = "Ciclonii sunt zone cu presiune scăzută și favorizează formarea norilor și precipitațiilor."
             ),
             WeatherQuizQuestion(
                 id = "fallback_fog",
-                question = "Ce este ceata?",
+                question = "Ce este ceața?",
                 answers = listOf(
                     "Un nor aflat la nivelul solului",
-                    "O furtuna de praf",
-                    "O ploaie slaba"
+                    "O furtună de praf",
+                    "O ploaie slabă"
                 ),
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Ceata este formata din picaturi foarte mici de apa suspendate aproape de sol."
+                explanation = "Ceața este formată din picături foarte mici de apă suspendate aproape de sol."
             ),
             WeatherQuizQuestion(
                 id = "fallback_tornado_scale",
-                question = "Ce scara este utilizata pentru clasificarea tornadelor?",
+                question = "Ce scară este utilizată pentru clasificarea tornadelor?",
                 answers = listOf(
                     "Richter",
-                    "Fujita Imbunatatita",
+                    "Fujita Îmbunătățită",
                     "Beaufort"
                 ),
                 correctIndex = 1,
                 category = "fenomene_extreme",
                 difficulty = "medium",
-                explanation = "Scara Fujita Imbunatatita clasifica tornadele in functie de daunele produse."
+                explanation = "Scara Fujita Îmbunătățită clasifică tornadele în funcție de daunele produse."
             ),
             WeatherQuizQuestion(
                 id = "fallback_rain_gauge",
-                question = "Ce masoara pluviometrul?",
+                question = "Ce măsoară pluviometrul?",
                 answers = listOf(
-                    "Cantitatea de precipitatii",
-                    "Presiunea atmosferica",
+                    "Cantitatea de precipitații",
+                    "Presiunea atmosferică",
                     "Umiditatea aerului"
                 ),
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Pluviometrul masoara cantitatea de precipitatii cazuta intr-o anumita perioada."
+                explanation = "Pluviometrul măsoară cantitatea de precipitații căzută într-o anumită perioadă."
             ),
             WeatherQuizQuestion(
                 id = "fallback_hail",
                 question = "Ce este grindina?",
                 answers = listOf(
-                    "Picaturi de apa foarte reci",
-                    "Bucati de gheata formate in norii de furtuna",
-                    "Cristale de zapada"
+                    "Picături de apă foarte reci",
+                    "Bucăți de gheață formate în norii de furtună",
+                    "Cristale de zăpadă"
                 ),
                 correctIndex = 1,
                 category = "fenomene_extreme",
                 difficulty = "easy",
-                explanation = "Grindina se formeaza in norii de furtuna, mai ales in cumulonimbus."
+                explanation = "Grindina se formează în norii de furtună, mai ales în cumulonimbus."
             ),
             WeatherQuizQuestion(
                 id = "fallback_sun_energy",
-                question = "Care este sursa principala de energie a vremii pe Pamant?",
+                question = "Care este sursa principală de energie a vremii pe Pământ?",
                 answers = listOf(
                     "Luna",
                     "Soarele",
-                    "Vantul"
+                    "Vântul"
                 ),
                 correctIndex = 1,
                 category = "climatologie",
                 difficulty = "easy",
-                explanation = "Soarele furnizeaza energia care pune in miscare procesele atmosferice."
+                explanation = "Soarele furnizează energia care pune în mișcare procesele atmosferice."
             ),
             WeatherQuizQuestion(
                 id = "fallback_condensation",
-                question = "Cum se numeste procesul prin care vaporii de apa devin picaturi?",
+                question = "Cum se numește procesul prin care vaporii de apă devin picături?",
                 answers = listOf(
                     "Evaporare",
                     "Condensare",
@@ -357,11 +357,11 @@ class WeatherQuizRepository @Inject constructor(
                 correctIndex = 1,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Condensarea este procesul prin care vaporii de apa se transforma in picaturi si pot forma nori."
+                explanation = "Condensarea este procesul prin care vaporii de apă se transformă în picături și pot forma nori."
             ),
             WeatherQuizQuestion(
                 id = "fallback_pressure_unit",
-                question = "Care este unitatea uzuala pentru presiunea atmosferica?",
+                question = "Care este unitatea uzuală pentru presiunea atmosferică?",
                 answers = listOf(
                     "hPa",
                     "km/h",
@@ -370,7 +370,7 @@ class WeatherQuizRepository @Inject constructor(
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "medium",
-                explanation = "Presiunea atmosferica este exprimata frecvent in hectopascali, adica hPa."
+                explanation = "Presiunea atmosferică este exprimată frecvent în hectopascali, adică hPa."
             ),
             WeatherQuizQuestion(
                 id = "fallback_cold_front",
@@ -378,16 +378,16 @@ class WeatherQuizRepository @Inject constructor(
                 answers = listOf(
                     "Front rece",
                     "Front cald",
-                    "Front stationar"
+                    "Front staționar"
                 ),
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "medium",
-                explanation = "Fronturile reci pot ridica rapid aerul cald, favorizand averse si furtuni."
+                explanation = "Fronturile reci pot ridica rapid aerul cald, favorizând averse și furtuni."
             ),
             WeatherQuizQuestion(
                 id = "fallback_troposphere_weather",
-                question = "Cum se numeste stratul atmosferic in care se produce vremea?",
+                question = "Cum se numește stratul atmosferic în care se produce vremea?",
                 answers = listOf(
                     "Stratosfera",
                     "Troposfera",
@@ -396,63 +396,63 @@ class WeatherQuizRepository @Inject constructor(
                 correctIndex = 1,
                 category = "meteorologie",
                 difficulty = "medium",
-                explanation = "Majoritatea fenomenelor meteorologice au loc in troposfera."
+                explanation = "Majoritatea fenomenelor meteorologice au loc în troposferă."
             ),
             WeatherQuizQuestion(
                 id = "fallback_pressure_drop",
-                question = "Ce poate indica o presiune atmosferica in scadere?",
+                question = "Ce poate indica o presiune atmosferică în scădere?",
                 answers = listOf(
-                    "Posibila deteriorare a vremii",
+                    "Posibilă deteriorare a vremii",
                     "Cer complet senin garantat",
-                    "Lipsa vantului"
+                    "Lipsa vântului"
                 ),
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "medium",
-                explanation = "Presiunea in scadere poate indica apropierea unui sistem depresionar si vreme instabila."
+                explanation = "Presiunea în scădere poate indica apropierea unui sistem depresionar și vreme instabilă."
             ),
             WeatherQuizQuestion(
                 id = "fallback_heat_wave",
-                question = "Ce este un val de caldura?",
+                question = "Ce este un val de căldură?",
                 answers = listOf(
                     "Perioada cu temperaturi mult peste normal",
-                    "O furtuna tropicala",
-                    "O perioada cu umiditate scazuta"
+                    "O furtună tropicală",
+                    "O perioadă cu umiditate scăzută"
                 ),
                 correctIndex = 0,
                 category = "climatologie",
                 difficulty = "easy",
-                explanation = "Valul de caldura este o perioada cu temperaturi ridicate, peste valorile normale ale zonei."
+                explanation = "Valul de căldură este o perioadă cu temperaturi ridicate, peste valorile normale ale zonei."
             ),
             WeatherQuizQuestion(
                 id = "fallback_convection",
-                question = "Ce fenomen apare atunci cand aerul cald urca?",
+                question = "Ce fenomen apare atunci când aerul cald urcă?",
                 answers = listOf(
-                    "Convectie",
+                    "Convecție",
                     "Reflexie",
                     "Eroziune"
                 ),
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "medium",
-                explanation = "Convectia este miscarea aerului cald in sus si are un rol important in formarea norilor."
+                explanation = "Convecția este mișcarea aerului cald în sus și are un rol important în formarea norilor."
             ),
             WeatherQuizQuestion(
                 id = "fallback_snow",
-                question = "Ce tip de precipitatie este format din cristale de gheata?",
+                question = "Ce tip de precipitație este format din cristale de gheață?",
                 answers = listOf(
                     "Ploaia",
                     "Ninsoarea",
-                    "Burnita"
+                    "Burniță"
                 ),
                 correctIndex = 1,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Ninsoarea este formata din cristale de gheata care cad sub forma de fulgi."
+                explanation = "Ninsoarea este formată din cristale de gheață care cad sub formă de fulgi."
             ),
             WeatherQuizQuestion(
                 id = "fallback_lowest_layer",
-                question = "Care este cel mai apropiat strat al atmosferei de suprafata Pamantului?",
+                question = "Care este cel mai apropiat strat al atmosferei de suprafața Pământului?",
                 answers = listOf(
                     "Troposfera",
                     "Stratosfera",
@@ -461,50 +461,50 @@ class WeatherQuizRepository @Inject constructor(
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Troposfera incepe de la nivelul solului si contine majoritatea fenomenelor meteo."
+                explanation = "Troposfera începe de la nivelul solului și conține majoritatea fenomenelor meteo."
             ),
             WeatherQuizQuestion(
                 id = "fallback_greenhouse_effect",
-                question = "Ce este efectul de sera?",
+                question = "Ce este efectul de seră?",
                 answers = listOf(
-                    "Procesul prin care anumite gaze retin caldura in atmosfera",
+                    "Procesul prin care anumite gaze rețin căldura în atmosferă",
                     "Formarea norilor",
-                    "Masurarea temperaturii"
+                    "Măsurarea temperaturii"
                 ),
                 correctIndex = 0,
                 category = "climatologie",
                 difficulty = "medium",
-                explanation = "Efectul de sera este procesul prin care anumite gaze retin o parte din caldura radiata de Pamant."
+                explanation = "Efectul de seră este procesul prin care anumite gaze rețin o parte din căldura radiată de Pământ."
             ),
             WeatherQuizQuestion(
                 id = "fallback_lightning",
                 question = "Ce fenomen meteo produce descarcari electrice?",
                 answers = listOf(
-                    "Ceata",
-                    "Furtuna",
-                    "Burnita"
+                    "Ceață",
+                    "Furtună",
+                    "Burniță"
                 ),
                 correctIndex = 1,
                 category = "fenomene_extreme",
                 difficulty = "easy",
-                explanation = "Fulgerele apar in timpul furtunilor electrice."
+                explanation = "Fulgerele apar în timpul furtunilor electrice."
             ),
             WeatherQuizQuestion(
                 id = "fallback_forecast",
-                question = "Ce inseamna prognoza meteo?",
+                question = "Ce înseamnă prognoza meteo?",
                 answers = listOf(
-                    "Estimarea conditiilor atmosferice viitoare",
-                    "Masurarea temperaturii curente",
+                    "Estimarea condițiilor atmosferice viitoare",
+                    "Măsurarea temperaturii curente",
                     "Analiza solului"
                 ),
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Prognoza meteo foloseste observatii si modele pentru a estima evolutia vremii."
+                explanation = "Prognoza meteo folosește observații și modele pentru a estima evoluția vremii."
             ),
             WeatherQuizQuestion(
                 id = "fallback_freezing_point",
-                question = "Care este temperatura la care apa ingheata la presiune normala?",
+                question = "Care este temperatura la care apa îngheață la presiune normală?",
                 answers = listOf(
                     "0 grade Celsius",
                     "10 grade Celsius",
@@ -513,7 +513,7 @@ class WeatherQuizRepository @Inject constructor(
                 correctIndex = 0,
                 category = "meteorologie",
                 difficulty = "easy",
-                explanation = "Apa ingheata la 0 grade Celsius in conditii normale de presiune."
+                explanation = "Apa îngheață la 0 grade Celsius în condiții normale de presiune."
             )
         )
     }

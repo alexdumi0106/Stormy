@@ -109,7 +109,7 @@ fun WeatherGamesScreen(
 
                 WeatherGamesReferenceImage(
                     drawableRes = R.drawable.weather_games_next_card,
-                    contentDescription = "Urmatorul joc",
+                    contentDescription = "Următorul joc",
                     aspectRatio = 820f / 120f
                 )
 
@@ -167,7 +167,7 @@ private fun WeatherGamesHeader(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Inapoi",
+                contentDescription = "Înapoi",
                 tint = Color.White,
                 modifier = Modifier.size(43.dp)
             )
@@ -229,7 +229,7 @@ private fun AdventureTitle() {
             )
         }
         Text(
-            text = "Testeaza-ti reflexele si memoria cu jocuri rapide inspirate de vreme.",
+            text = "Testează-ți reflexele și memoria cu jocuri rapide inspirate de vreme.",
             color = GamesMutedText,
             fontSize = 14.sp,
             lineHeight = 19.sp

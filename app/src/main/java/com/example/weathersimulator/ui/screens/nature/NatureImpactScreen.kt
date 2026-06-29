@@ -92,11 +92,11 @@ fun NatureImpactScreen(
     val snowfall = hourly?.snowfall?.firstOrNull() ?: 0.0
     val cityLabel = cityName
         .substringBefore(",")
-        .replace("Loca\u010C\u203Aia ta", "Locatia ta")
-        .replace("Loca\u021bia ta", "Locatia ta")
-        .replace("Loca\u0163ia ta", "Locatia ta")
-        .replace("Loca\u010dia ta", "Locatia ta")
-        .ifBlank { "Locatia ta" }
+        .replace("Loca\u010C\u203Aia ta", "Locația ta")
+        .replace("Loca\u021bia ta", "Locația ta")
+        .replace("Loca\u0163ia ta", "Locația ta")
+        .replace("Loca\u010dia ta", "Locația ta")
+        .ifBlank { "Locația ta" }
     val summary = buildNatureImpactSummary(
         date = date,
         temperature = current?.temperature,
@@ -130,7 +130,7 @@ fun NatureImpactScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Inapoi",
+                            contentDescription = "Înapoi",
                             tint = Color.White,
                             modifier = Modifier.size(30.dp)
                         )
@@ -436,7 +436,7 @@ private fun NatureImpactList(items: List<NatureImpactItem>) {
                     modifier = Modifier.size(28.dp)
                 )
                 Text(
-                    text = "Semnale pentru natura",
+                    text = "Semnale pentru natură",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp
@@ -540,7 +540,7 @@ private fun NatureWeatherFacts(
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 NatureFactTile(
                     icon = Icons.Rounded.Thermostat,
-                    label = "Temperatura",
+                    label = "Temperatură",
                     value = temperature,
                     accent = NatureYellow,
                     modifier = Modifier.weight(1f)
@@ -557,14 +557,14 @@ private fun NatureWeatherFacts(
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 NatureFactTile(
                     icon = Icons.Rounded.Cloud,
-                    label = "Precipitatii",
+                    label = "Precipitații",
                     value = precipitation,
                     accent = NatureBlue,
                     modifier = Modifier.weight(1f)
                 )
                 NatureFactTile(
                     icon = Icons.Rounded.Air,
-                    label = "Vant",
+                    label = "Vânt",
                     value = wind,
                     accent = NatureGreen,
                     modifier = Modifier.weight(1f)
@@ -655,6 +655,7 @@ private fun buildNatureImpactSummary(
     val frostSeason = month in listOf(1, 2, 3, 4, 11, 12)
     val coldSeason = month in listOf(1, 2, 12)
     val autumn = month in 9..11
+    val winterSignalsBlocked = temperature == null || temp >= 10.0 || (warmSeason && temp > 3.0)
 
     val floweringScore = when {
         !springOrEarlySummer -> if (vegetationSeason) 44 else 18
@@ -698,18 +699,20 @@ private fun buildNatureImpactSummary(
     }
 
     val frostScore = when {
+        winterSignalsBlocked -> 0
         temp <= -3.0 -> 96
         temp <= 1.0 && (hum >= 75 || rainy || snow) -> 90
         temp <= 3.0 && frostSeason -> 74
         temp <= 5.0 && frostSeason -> 52
-        else -> 18
+        else -> 0
     }
 
     val iceScore = when {
+        winterSignalsBlocked -> 0
         temp <= 1.0 && (rainy || snow || precipitation > 0.0) -> 94
         temp <= 0.0 && hum >= 80 -> 78
         coldSeason && temp <= 3.0 && hum >= 70 -> 62
-        else -> 16
+        else -> 0
     }
 
     val heatStressScore = when {
@@ -734,10 +737,11 @@ private fun buildNatureImpactSummary(
     }
 
     val snowCoverScore = when {
+        winterSignalsBlocked || temp > 3.0 -> 0
         snow -> 90
         coldSeason && temp <= 0.0 -> 72
         month in listOf(1, 2, 12) && temp <= 3.0 -> 46
-        else -> 12
+        else -> 0
     }
 
     val stormImpactScore = when {
@@ -750,7 +754,7 @@ private fun buildNatureImpactSummary(
 
     val items = listOf(
         NatureImpactItem(
-            title = "Inflorire",
+            title = "Înflorire",
             description = floweringDescription(floweringScore, springOrEarlySummer),
             level = positiveLevelLabel(floweringScore),
             score = floweringScore,
@@ -758,7 +762,7 @@ private fun buildNatureImpactSummary(
             accent = positiveScoreColor(floweringScore)
         ),
         NatureImpactItem(
-            title = "Polen in aer",
+            title = "Polen în aer",
             description = pollenDescription(pollenScore),
             level = riskLevelLabel(pollenScore),
             score = pollenScore,
@@ -774,7 +778,7 @@ private fun buildNatureImpactSummary(
             accent = positiveScoreColor(pollinatorScore)
         ),
         NatureImpactItem(
-            title = "Aparitia ciupercilor",
+            title = "Apariția ciupercilor",
             description = mushroomDescription(mushroomScore),
             level = positiveLevelLabel(mushroomScore),
             score = mushroomScore,
@@ -782,7 +786,7 @@ private fun buildNatureImpactSummary(
             accent = positiveScoreColor(mushroomScore)
         ),
         NatureImpactItem(
-            title = "Conditii pentru tantari",
+            title = "Condiții pentru țânțari",
             description = mosquitoDescription(mosquitoScore),
             level = riskLevelLabel(mosquitoScore),
             score = mosquitoScore,
@@ -790,7 +794,7 @@ private fun buildNatureImpactSummary(
             accent = riskScoreColor(mosquitoScore)
         ),
         NatureImpactItem(
-            title = "Risc de inghet",
+            title = "Risc de îngheț",
             description = frostDescription(frostScore),
             level = riskLevelLabel(frostScore),
             score = frostScore,
@@ -814,7 +818,7 @@ private fun buildNatureImpactSummary(
             accent = riskScoreColor(heatStressScore)
         ),
         NatureImpactItem(
-            title = "Uscaciune la sol",
+            title = "Uscăciune la sol",
             description = soilDrynessDescription(soilDrynessScore),
             level = riskLevelLabel(soilDrynessScore),
             score = soilDrynessScore,
@@ -822,7 +826,7 @@ private fun buildNatureImpactSummary(
             accent = riskScoreColor(soilDrynessScore)
         ),
         NatureImpactItem(
-            title = "Culori de toamna",
+            title = "Culori de toamnă",
             description = autumnColorDescription(autumnColorScore),
             level = positiveLevelLabel(autumnColorScore),
             score = autumnColorScore,
@@ -830,7 +834,7 @@ private fun buildNatureImpactSummary(
             accent = positiveScoreColor(autumnColorScore)
         ),
         NatureImpactItem(
-            title = "Strat de zapada",
+            title = "Strat de zăpadă",
             description = snowCoverDescription(snowCoverScore),
             level = positiveLevelLabel(snowCoverScore),
             score = snowCoverScore,
@@ -838,7 +842,7 @@ private fun buildNatureImpactSummary(
             accent = if (snowCoverScore >= 65) NatureBlue else NatureMutedText
         ),
         NatureImpactItem(
-            title = "Impact de vant/furtuna",
+            title = "Impact de vânt/furtună",
             description = stormImpactDescription(stormImpactScore),
             level = riskLevelLabel(stormImpactScore),
             score = stormImpactScore,
@@ -851,19 +855,19 @@ private fun buildNatureImpactSummary(
     val headline = strongest?.let { "${it.title}: ${it.level.lowercase()}" }
         ?: "Impact meteo moderat"
     val advice = when (strongest?.title) {
-        "Inflorire" -> "Vremea favorizeaza activitatea plantelor si aspectul vegetatiei."
-        "Polen in aer" -> "Conditiile pot favoriza raspandirea polenului, mai ales in zone verzi."
-        "Activitate polenizatori" -> "Vremea este potrivita pentru albine si alte insecte polenizatoare."
-        "Aparitia ciupercilor" -> "Umezeala si temperatura pot favoriza aparitia ciupercilor."
-        "Conditii pentru tantari" -> "Conditiile pot creste disconfortul produs de insecte in zone verzi."
-        "Risc de inghet" -> "Temperatura poate afecta plantele sensibile si suprafetele expuse."
-        "Risc de polei" -> "Combinatia de frig si umezeala poate face suprafetele alunecoase."
-        "Stres termic pentru plante" -> "Plantele pot avea nevoie de atentie din cauza caldurii."
-        "Uscaciune la sol" -> "Solul se poate usca mai repede in zonele expuse la soare."
-        "Culori de toamna" -> "Vremea poate favoriza schimbarea culorilor frunzelor."
-        "Strat de zapada" -> "Conditiile sunt potrivite pentru mentinerea sau aparitia zapezii."
-        "Impact de vant/furtuna" -> "Vantul poate afecta ramurile, florile si vegetatia expusa."
-        else -> "Conditiile sunt echilibrate, cu impact natural redus."
+        "Înflorire" -> "Vremea favorizează activitatea plantelor și aspectul vegetației."
+        "Polen în aer" -> "Condițiile pot favoriza răspândirea polenului, mai ales în zone verzi."
+        "Activitate polenizatori" -> "Vremea este potrivită pentru albine și alte insecte polenizatoare."
+        "Apariția ciupercilor" -> "Umezeala și temperatura pot favoriza apariția ciupercilor."
+        "Condiții pentru țânțari" -> "Condițiile pot crește disconfortul produs de insecte în zone verzi."
+        "Risc de îngheț" -> "Temperatura poate afecta plantele sensibile și suprafețele expuse."
+        "Risc de polei" -> "Combinația de frig și umezeală poate face suprafețele alunecoase."
+        "Stres termic pentru plante" -> "Plantele pot avea nevoie de atenție din cauza căldurii."
+        "Uscăciune la sol" -> "Solul se poate usca mai repede în zonele expuse la soare."
+        "Culori de toamnă" -> "Vremea poate favoriza schimbarea culorilor frunzelor."
+        "Strat de zăpadă" -> "Condițiile sunt potrivite pentru menținerea sau apariția zăpezii."
+        "Impact de vânt/furtună" -> "Vântul poate afecta ramurile, florile și vegetația expusă."
+        else -> "Condițiile sunt echilibrate, cu impact natural redus."
     }
 
     return NatureImpactSummary(
@@ -875,98 +879,98 @@ private fun buildNatureImpactSummary(
 
 private fun floweringDescription(score: Int, inSeason: Boolean): String {
     return when {
-        !inSeason -> "Sezonul nu este ideal pentru inflorire intensa."
-        score >= 85 -> "Conditii excelente pentru flori si vegetatie activa."
-        score >= 65 -> "Conditii bune, dar vremea poate limita usor ritmul natural."
-        else -> "Conditii mai slabe pentru inflorire in acest moment."
+        !inSeason -> "Sezonul nu este ideal pentru înflorire intensă."
+        score >= 85 -> "Condiții excelente pentru flori și vegetație activă."
+        score >= 65 -> "Condiții bune, dar vremea poate limita ușor ritmul natural."
+        else -> "Condiții mai slabe pentru înflorire în acest moment."
     }
 }
 
 private fun pollenDescription(score: Int): String {
     return when {
-        score >= 85 -> "Vreme calda, uscata si cu vant favorabil raspandirii polenului."
-        score >= 65 -> "Exista conditii moderate pentru polen in aer."
-        else -> "Conditiile limiteaza raspandirea polenului."
+        score >= 85 -> "Vreme caldă, uscată și cu vânt favorabil răspândirii polenului."
+        score >= 65 -> "Există condiții moderate pentru polen în aer."
+        else -> "Condițiile limitează răspândirea polenului."
     }
 }
 
 private fun pollinatorDescription(score: Int): String {
     return when {
-        score >= 85 -> "Conditii foarte bune pentru activitatea albinelor si polenizatorilor."
-        score >= 65 -> "Activitate posibila, mai ales in intervalele mai calde ale zilei."
-        else -> "Ploaia, frigul sau vantul pot reduce activitatea polenizatorilor."
+        score >= 85 -> "Condiții foarte bune pentru activitatea albinelor și polenizatorilor."
+        score >= 65 -> "Activitate posibilă, mai ales în intervalele mai calde ale zilei."
+        else -> "Ploaia, frigul sau vântul pot reduce activitatea polenizatorilor."
     }
 }
 
 private fun mushroomDescription(score: Int): String {
     return when {
-        score >= 85 -> "Umezeala si temperatura sunt favorabile aparitiei ciupercilor."
-        score >= 65 -> "Exista sanse moderate in zone umbrite sau umede."
-        else -> "Conditiile sunt mai putin favorabile pentru ciuperci."
+        score >= 85 -> "Umezeala și temperatura sunt favorabile apariției ciupercilor."
+        score >= 65 -> "Există șanse moderate în zone umbrite sau umede."
+        else -> "Condițiile sunt mai puțin favorabile pentru ciuperci."
     }
 }
 
 private fun mosquitoDescription(score: Int): String {
     return when {
-        score >= 85 -> "Conditii favorabile, mai ales seara, langa apa sau vegetatie."
-        score >= 65 -> "Conditii moderate in zone umede si ferite de vant."
-        else -> "Conditii reduse pentru activitatea tantarilor."
+        score >= 85 -> "Condiții favorabile, mai ales seara, lângă apă sau vegetație."
+        score >= 65 -> "Condiții moderate în zone umede și ferite de vânt."
+        else -> "Condiții reduse pentru activitatea țânțarilor."
     }
 }
 
 private fun frostDescription(score: Int): String {
     return when {
-        score >= 85 -> "Risc ridicat pentru plante sensibile si suprafete expuse."
-        score >= 65 -> "Risc moderat, mai ales dimineata sau noaptea."
-        else -> "Risc redus de inghet in conditiile actuale."
+        score >= 85 -> "Risc ridicat pentru plante sensibile și suprafețe expuse."
+        score >= 65 -> "Risc moderat, mai ales dimineața sau noaptea."
+        else -> "Risc redus de îngheț în condițiile actuale."
     }
 }
 
 private fun iceDescription(score: Int): String {
     return when {
-        score >= 85 -> "Frigul si umezeala pot favoriza poleiul."
-        score >= 65 -> "Exista sanse moderate de suprafete alunecoase."
+        score >= 85 -> "Frigul și umezeala pot favoriza poleiul."
+        score >= 65 -> "Există șanse moderate de suprafețe alunecoase."
         else -> "Risc redus de polei."
     }
 }
 
 private fun heatStressDescription(score: Int): String {
     return when {
-        score >= 85 -> "Caldura si UV-ul pot stresa plantele expuse."
-        score >= 65 -> "Stres moderat pentru vegetatie in zone insorite."
+        score >= 85 -> "Căldura și UV-ul pot stresa plantele expuse."
+        score >= 65 -> "Stres moderat pentru vegetație în zone însorite."
         else -> "Stres termic redus pentru plante."
     }
 }
 
 private fun soilDrynessDescription(score: Int): String {
     return when {
-        score >= 85 -> "Solul se poate usca rapid fara precipitatii."
-        score >= 65 -> "Uscaciune moderata in zone expuse la soare."
-        else -> "Uscaciune redusa la nivelul solului."
+        score >= 85 -> "Solul se poate usca rapid fără precipitații."
+        score >= 65 -> "Uscăciune moderată în zone expuse la soare."
+        else -> "Uscăciune redusă la nivelul solului."
     }
 }
 
 private fun autumnColorDescription(score: Int): String {
     return when {
-        score >= 85 -> "Conditii bune pentru intensificarea culorilor de toamna."
-        score >= 65 -> "Schimbarea frunzelor poate fi vizibila treptat."
-        else -> "Sezonul sau vremea nu favorizeaza in mod special culorile de toamna."
+        score >= 85 -> "Condiții bune pentru intensificarea culorilor de toamnă."
+        score >= 65 -> "Schimbarea frunzelor poate fi vizibilă treptat."
+        else -> "Sezonul sau vremea nu favorizează în mod special culorile de toamnă."
     }
 }
 
 private fun snowCoverDescription(score: Int): String {
     return when {
-        score >= 85 -> "Conditii favorabile pentru zapada sau strat persistent."
-        score >= 65 -> "Frigul poate mentine zapada in zonele expuse."
-        else -> "Conditii slabe pentru strat de zapada."
+        score >= 85 -> "Condiții favorabile pentru zăpadă sau strat persistent."
+        score >= 65 -> "Frigul poate menține zăpada în zonele expuse."
+        else -> "Condiții slabe pentru strat de zăpadă."
     }
 }
 
 private fun stormImpactDescription(score: Int): String {
     return when {
-        score >= 85 -> "Vantul sau furtuna pot afecta ramurile si plantele fragile."
-        score >= 65 -> "Impact moderat asupra vegetatiei expuse."
-        else -> "Impact redus al vantului asupra naturii."
+        score >= 85 -> "Vântul sau furtuna pot afecta ramurile și plantele fragile."
+        score >= 65 -> "Impact moderat asupra vegetației expuse."
+        else -> "Impact redus al vântului asupra naturii."
     }
 }
 
@@ -975,7 +979,7 @@ private fun positiveLevelLabel(score: Int): String {
         score >= 85 -> "Excelent"
         score >= 65 -> "Bun"
         score >= 45 -> "Moderat"
-        else -> "Scazut"
+        else -> "Scăzut"
     }
 }
 
@@ -983,8 +987,8 @@ private fun riskLevelLabel(score: Int): String {
     return when {
         score >= 85 -> "Ridicat"
         score >= 65 -> "Moderat"
-        score >= 45 -> "Scazut"
-        else -> "Foarte scazut"
+        score >= 45 -> "Scăzut"
+        else -> "Foarte scăzut"
     }
 }
 
@@ -1015,12 +1019,12 @@ private fun natureConditionLabel(
 
     return when {
         snowfall > 0.0 || code in 71..86 -> "Ninsoare"
-        code in 95..99 -> "Furtuna"
+        code in 95..99 -> "Furtună"
         precipitation > 0.0 || code in 51..67 || code in 80..82 -> "Ploaie"
-        code in 45..48 -> "Ceata"
+        code in 45..48 -> "Ceață"
         code == 0 -> "Cer senin"
-        code in 1..3 -> "Partial noros"
-        else -> "Vreme actuala"
+        code in 1..3 -> "Parțial noros"
+        else -> "Vreme actuală"
     }
 }
 

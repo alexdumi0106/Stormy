@@ -366,6 +366,13 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
+    fun generateWeatherStory() {
+        if (_state.value.isWeatherStoryLoading) return
+
+        val response = _state.value.data ?: cachedResponse ?: return
+        generateWeatherStory(response)
+    }
+
     private fun generateWeatherStory(response: OpenMeteoResponse) {
         viewModelScope.launch {
             _state.update {
@@ -407,21 +414,21 @@ class WeatherViewModel @Inject constructor(
         val daily = response.daily
 
         return WeatherStoryRequest(
-            temperature = current?.temperature,
-            apparentTemperature = current?.apparentTemperature,
+            temperature = current?.temperature?.roundToInt(),
+            apparentTemperature = current?.apparentTemperature?.roundToInt(),
             humidity = current?.humidity,
-            windSpeed = current?.windSpeed,
-            pressure = current?.pressure,
+            windSpeed = current?.windSpeed?.roundToInt(),
+            pressure = current?.pressure?.roundToInt(),
             weatherCode = current?.weatherCode,
             cloudCover = current?.cloudCover,
             nextHours = hourly?.time?.take(8) ?: emptyList(),
-            nextTemperatures = hourly?.temperature?.take(8) ?: emptyList(),
-            nextPrecipitation = hourly?.precipitation?.take(8) ?: emptyList(),
-            nextWindSpeed = hourly?.windSpeed?.take(8) ?: emptyList(),
+            nextTemperatures = hourly?.temperature?.take(8)?.map { it.roundToInt() } ?: emptyList(),
+            nextPrecipitation = hourly?.precipitation?.take(8)?.map { it.roundToInt() } ?: emptyList(),
+            nextWindSpeed = hourly?.windSpeed?.take(8)?.map { it.roundToInt() } ?: emptyList(),
             nextWeatherCodes = hourly?.weatherCode?.take(8) ?: emptyList(),
             dailyDates = daily?.time?.take(3) ?: emptyList(),
-            dailyMaxTemperatures = daily?.tempMax?.take(3) ?: emptyList(),
-            dailyMinTemperatures = daily?.tempMin?.take(3) ?: emptyList(),
+            dailyMaxTemperatures = daily?.tempMax?.take(3)?.map { it.roundToInt() } ?: emptyList(),
+            dailyMinTemperatures = daily?.tempMin?.take(3)?.map { it.roundToInt() } ?: emptyList(),
             dailyWeatherCodes = daily?.weatherCode?.take(3) ?: emptyList()
         )
     }
@@ -429,7 +436,6 @@ class WeatherViewModel @Inject constructor(
     private fun applyResponse(response: OpenMeteoResponse) {
         val hourlyItems = mapHourlyForecast(response)
         val dailyItems = mapDailyForecast(response)
-        generateWeatherStory(response)
 
         lastFetchAtMs = System.currentTimeMillis()
         lastFetchLat = response.latitude
@@ -445,6 +451,9 @@ class WeatherViewModel @Inject constructor(
                 data = response,
                 hourlyForecast = hourlyItems,
                 dailyForecast = dailyItems,
+                weatherStory = null,
+                isWeatherStoryLoading = false,
+                weatherStoryError = null,
                 error = null
             )
         }
@@ -456,6 +465,9 @@ class WeatherViewModel @Inject constructor(
                 isLoading = false,
                 data = response,
                 error = null,
+                weatherStory = null,
+                isWeatherStoryLoading = false,
+                weatherStoryError = null,
                 hourlyForecast = emptyList(),
                 dailyForecast = emptyList()
             )

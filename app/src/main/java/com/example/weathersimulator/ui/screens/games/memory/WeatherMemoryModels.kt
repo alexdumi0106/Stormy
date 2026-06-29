@@ -30,7 +30,7 @@ enum class WeatherMemoryLevel(
 ) {
     Easy(
         label = "Nivel 1",
-        subtitle = "Usor",
+        subtitle = "Ușor",
         pairCount = 6,
         columns = 3,
         targetSeconds = 75
@@ -77,7 +77,7 @@ data class WeatherMemoryGameState(
         get() = cards.size / 2
 
     val progressLabel: String
-        get() = "$matchedPairs/$totalPairs perechi gasite"
+        get() = "$matchedPairs/$totalPairs perechi găsite"
 
     val accuracyPercent: Int
         get() = if (attempts == 0) 100 else ((matchedPairs * 100f) / attempts).toInt()

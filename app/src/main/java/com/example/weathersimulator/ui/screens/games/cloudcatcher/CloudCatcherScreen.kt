@@ -170,7 +170,7 @@ private fun CloudCatcherIntroScreen(
 
                     CloudCatcherIntroImage(
                         drawableRes = R.drawable.cloud_catcher_intro_how,
-                        contentDescription = "Cum functioneaza Cloud Catcher",
+                        contentDescription = "Cum funcționează Cloud Catcher",
                         aspectRatio = 542f / 218f
                     )
 
@@ -213,7 +213,7 @@ private fun CloudCatcherIntroStats(
         )
         CloudCatcherIntroStatTile(
             icon = Icons.Rounded.Favorite,
-            label = "Vieti",
+            label = "Vieți",
             value = StartingLives.toString(),
             accent = Color(0xFFFF6FA1),
             modifier = Modifier.weight(1f)
@@ -499,7 +499,7 @@ private fun CloudCatcherGameHud(
             if (phase == CloudCatcherPhase.Finished) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Iesi din joc",
+                    contentDescription = "Ieși din joc",
                     tint = Color.White,
                     modifier = Modifier.size(32.dp)
                 )
@@ -554,7 +554,7 @@ private fun CloudCatcherGameHud(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Vieti",
+                    text = "Vieți",
                     color = Color.White.copy(alpha = 0.78f),
                     fontSize = 13.sp,
                     maxLines = 1
@@ -707,7 +707,7 @@ private fun CloudCatcherGameLegend(
             verticalArrangement = Arrangement.spacedBy(13.dp)
         ) {
             Text(
-                text = "Fenomene in joc",
+                text = "Fenomene în joc",
                 color = Color.White,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp
@@ -726,7 +726,7 @@ private fun CloudCatcherGameLegend(
                 )
                 CloudCatcherLegendTile(
                     type = CloudCatcherObjectType.RainDrop,
-                    title = "Picatura",
+                    title = "Picătură",
                     value = "+5",
                     valueColor = CloudCatcherCyan,
                     modifier = Modifier.weight(1f)
@@ -741,7 +741,7 @@ private fun CloudCatcherGameLegend(
                 CloudCatcherLegendTile(
                     type = CloudCatcherObjectType.StormCloud,
                     title = "Nor negru",
-                    value = "-1 viata",
+                    value = "-1 viață",
                     valueColor = CloudCatcherRed,
                     modifier = Modifier.weight(1f)
                 )
@@ -874,7 +874,7 @@ private fun CloudCatcherPauseDialog(
                 }
 
                 Text(
-                    text = "Joc in pauza",
+                    text = "Joc în pauză",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp,
@@ -882,7 +882,7 @@ private fun CloudCatcherPauseDialog(
                 )
 
                 Text(
-                    text = "Doresti sa inchei sesiunea de joc?",
+                    text = "Dorești să închei sesiunea de joc?",
                     color = Color.White.copy(alpha = 0.78f),
                     style = MaterialTheme.typography.bodyMedium,
                     lineHeight = 20.sp,
@@ -906,7 +906,7 @@ private fun CloudCatcherPauseDialog(
                         contentPadding = PaddingValues(horizontal = 10.dp)
                     ) {
                         Text(
-                            text = "Iesi din joc",
+                            text = "Ieși din joc",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             maxLines = 1
@@ -926,7 +926,7 @@ private fun CloudCatcherPauseDialog(
                         )
                     ) {
                         Text(
-                            text = "Continua",
+                            text = "Continuă",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             maxLines = 1
@@ -997,7 +997,7 @@ private fun CloudCatcherOverlay(
             }
 
             Text(
-                text = "Runda incheiata",
+                text = "Runda încheiată",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
@@ -1036,9 +1036,9 @@ private fun CloudCatcherOverlay(
 
             Text(
                 text = if (lostLives) {
-                    "Ai pierdut toate vietile. Evita norii de furtuna si fulgerele."
+                    "Ai pierdut toate viețile. Evită norii de furtună și fulgerele."
                 } else {
-                    "Timpul s-a incheiat. Ai colectat cat mai multe fenomene bune."
+                    "Timpul s-a încheiat. Ai colectat cât mai multe fenomene bune."
                 },
                 color = Color.White.copy(alpha = 0.76f),
                 style = MaterialTheme.typography.bodyMedium,
@@ -1065,7 +1065,7 @@ private fun CloudCatcherOverlay(
                 )
                 Spacer(Modifier.width(9.dp))
                 Text(
-                    text = "Joaca din nou",
+                    text = "Joacă din nou",
                     fontWeight = FontWeight.Bold,
                     fontSize = 17.sp
                 )

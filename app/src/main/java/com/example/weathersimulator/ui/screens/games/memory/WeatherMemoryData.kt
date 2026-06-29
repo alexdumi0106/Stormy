@@ -6,49 +6,49 @@ object WeatherMemoryData {
             id = "sun",
             title = "Soare",
             icon = "☀️",
-            category = "Vreme stabila",
-            explanation = "Soarele incalzeste suprafata Pamantului si pune in miscare multe procese meteo, de la brize locale pana la evaporarea apei.",
-            difficulty = "Usor"
+            category = "Vreme stabilă",
+            explanation = "Soarele încălzește suprafața Pământului și pune în mișcare multe procese meteo, de la brize locale până la evaporarea apei.",
+            difficulty = "Ușor"
         ),
         WeatherMemoryCard(
             id = "white_cloud",
             title = "Nor alb",
             icon = "☁️",
             category = "Nori",
-            explanation = "Norii albi apar cand vaporii de apa se condenseaza in picaturi foarte mici. De multe ori indica o atmosfera relativ stabila.",
-            difficulty = "Usor"
+            explanation = "Norii albi apar când vaporii de apă se condensează în picături foarte mici. De multe ori indică o atmosferă relativ stabilă.",
+            difficulty = "Ușor"
         ),
         WeatherMemoryCard(
             id = "rain",
             title = "Ploaie",
             icon = "🌧️",
-            category = "Precipitatii",
-            explanation = "Ploaia apare cand picaturile din nori devin suficient de grele incat cad spre sol sub forma de precipitatii lichide.",
-            difficulty = "Usor"
+            category = "Precipitații",
+            explanation = "Ploaia apare când picăturile din nori devin suficient de grele încât cad spre sol sub formă de precipitații lichide.",
+            difficulty = "Ușor"
         ),
         WeatherMemoryCard(
             id = "snow",
             title = "Ninsoare",
             icon = "❄️",
-            category = "Precipitatii",
-            explanation = "Ninsoarea apare cand cristalele de gheata se formeaza in nori si ajung la sol fara sa se topeasca pe drum.",
-            difficulty = "Usor"
+            category = "Precipitații",
+            explanation = "Ninsoarea apare când cristalele de gheață se formează în nori și ajung la sol fără să se topească pe drum.",
+            difficulty = "Ușor"
         ),
         WeatherMemoryCard(
             id = "fog",
-            title = "Ceata",
+            title = "Ceață",
             icon = "🌫️",
             category = "Vizibilitate",
-            explanation = "Ceata apare cand aerul de langa sol este foarte umed, se raceste si vizibilitatea scade mult.",
-            difficulty = "Usor"
+            explanation = "Ceața apare când aerul de lângă sol este foarte umed, se răcește și vizibilitatea scade mult.",
+            difficulty = "Ușor"
         ),
         WeatherMemoryCard(
             id = "rainbow",
             title = "Curcubeu",
             icon = "🌈",
-            category = "Optica atmosferica",
-            explanation = "Curcubeul apare cand lumina soarelui este refractata si reflectata in picaturile de ploaie.",
-            difficulty = "Usor"
+            category = "Optică atmosferică",
+            explanation = "Curcubeul apare când lumina soarelui este refractată și reflectată în picăturile de ploaie.",
+            difficulty = "Ușor"
         )
     )
 
@@ -58,7 +58,7 @@ object WeatherMemoryData {
             title = "Cumulus",
             icon = "☁️",
             category = "Nori",
-            explanation = "Norii cumulus sunt nori albi, pufosi, care apar de obicei pe vreme stabila. Daca se dezvolta vertical, pot anunta instabilitate.",
+            explanation = "Norii cumulus sunt nori albi, pufoși, care apar de obicei pe vreme stabilă. Dacă se dezvoltă vertical, pot anunța instabilitate.",
             difficulty = "Mediu"
         ),
         WeatherMemoryCard(
@@ -66,7 +66,7 @@ object WeatherMemoryData {
             title = "Cirrus",
             icon = "〰️",
             category = "Nori",
-            explanation = "Norii cirrus sunt subtiri si se afla la altitudini mari. Ei pot indica schimbari de vreme in urmatoarele ore.",
+            explanation = "Norii cirrus sunt subțiri și se află la altitudini mari. Ei pot indica schimbări de vreme în următoarele ore.",
             difficulty = "Mediu"
         ),
         WeatherMemoryCard(
@@ -74,23 +74,23 @@ object WeatherMemoryData {
             title = "Stratus",
             icon = "▤",
             category = "Nori",
-            explanation = "Norii stratus formeaza un strat jos si uniform, asemanator unei paturi gri, si pot aduce burnita sau vreme mohorata.",
+            explanation = "Norii stratus formează un strat jos și uniform, asemănător unei pături gri, și pot aduce burniță sau vreme mohorâtă.",
             difficulty = "Mediu"
         ),
         WeatherMemoryCard(
             id = "storm",
-            title = "Furtuna",
+            title = "Furtună",
             icon = "⛈️",
-            category = "Vreme severa",
-            explanation = "Furtunile apar cand aerul cald si umed se ridica rapid si formeaza nori puternici, cu ploaie intensa, vant si descarcari electrice.",
+            category = "Vreme severă",
+            explanation = "Furtunile apar când aerul cald și umed se ridică rapid și formează nori puternici, cu ploaie intensă, vânt și descărcări electrice.",
             difficulty = "Mediu"
         ),
         WeatherMemoryCard(
             id = "pressure",
-            title = "Presiune atmosferica",
+            title = "Presiune atmosferică",
             icon = "🧭",
             category = "Atmosfera",
-            explanation = "Presiunea atmosferica este greutatea aerului de deasupra noastra. Scaderile rapide pot anunta vreme instabila.",
+            explanation = "Presiunea atmosferică este greutatea aerului de deasupra noastră. Scăderile rapide pot anunța vreme instabilă.",
             difficulty = "Mediu"
         ),
         WeatherMemoryCard(
@@ -98,23 +98,23 @@ object WeatherMemoryData {
             title = "Umiditate",
             icon = "💧",
             category = "Atmosfera",
-            explanation = "Umiditatea arata cata apa sub forma de vapori exista in aer. Cand este ridicata, aerul se simte mai apasator.",
+            explanation = "Umiditatea arată câtă apă sub formă de vapori există în aer. Când este ridicată, aerul se simte mai apăsător.",
             difficulty = "Mediu"
         ),
         WeatherMemoryCard(
             id = "wind",
-            title = "Vant",
+            title = "Vânt",
             icon = "🌬️",
-            category = "Miscarea aerului",
-            explanation = "Vantul apare cand aerul se deplaseaza din zone cu presiune mai mare spre zone cu presiune mai mica.",
+            category = "Mișcarea aerului",
+            explanation = "Vântul apare când aerul se deplasează din zone cu presiune mai mare spre zone cu presiune mai mică.",
             difficulty = "Mediu"
         ),
         WeatherMemoryCard(
             id = "dew_point",
-            title = "Punct de roua",
+            title = "Punct de rouă",
             icon = "💦",
             category = "Umiditate",
-            explanation = "Punctul de roua este temperatura la care vaporii de apa incep sa se condenseze. Este important pentru ceata, roua si confort termic.",
+            explanation = "Punctul de rouă este temperatura la care vaporii de apă încep să se condenseze. Este important pentru ceață, rouă și confort termic.",
             difficulty = "Mediu"
         )
     )
@@ -124,8 +124,8 @@ object WeatherMemoryData {
             id = "cumulonimbus",
             title = "Cumulonimbus",
             icon = "⛈️",
-            category = "Nori de furtuna",
-            explanation = "Cumulonimbus este un nor foarte dezvoltat vertical, asociat cu furtuni puternice, averse, grindina si fulgere.",
+            category = "Nori de furtună",
+            explanation = "Cumulonimbus este un nor foarte dezvoltat vertical, asociat cu furtuni puternice, averse, grindină și fulgere.",
             difficulty = "Avansat"
         ),
         WeatherMemoryCard(
@@ -133,7 +133,7 @@ object WeatherMemoryData {
             title = "Front rece",
             icon = "🔵",
             category = "Fronturi",
-            explanation = "Un front rece apare cand o masa de aer rece impinge aerul cald in sus. Poate aduce ploi intense si scaderea temperaturii.",
+            explanation = "Un front rece apare când o masă de aer rece împinge aerul cald în sus. Poate aduce ploi intense și scăderea temperaturii.",
             difficulty = "Avansat"
         ),
         WeatherMemoryCard(
@@ -141,7 +141,7 @@ object WeatherMemoryData {
             title = "Front cald",
             icon = "🔴",
             category = "Fronturi",
-            explanation = "Un front cald apare cand aerul cald aluneca peste aerul rece. De obicei aduce nori intinsi si precipitatii de durata.",
+            explanation = "Un front cald apare când aerul cald alunecă peste aerul rece. De obicei aduce nori întinși și precipitații de durată.",
             difficulty = "Avansat"
         ),
         WeatherMemoryCard(
@@ -149,7 +149,7 @@ object WeatherMemoryData {
             title = "Ciclon",
             icon = "🌀",
             category = "Sisteme meteo",
-            explanation = "Ciclonul este o zona de presiune joasa in jurul careia aerul se roteste si urca, favorizand norii si precipitatiile.",
+            explanation = "Ciclonul este o zonă de presiune joasă în jurul căreia aerul se rotește și urcă, favorizând norii și precipitațiile.",
             difficulty = "Avansat"
         ),
         WeatherMemoryCard(
@@ -157,31 +157,31 @@ object WeatherMemoryData {
             title = "Anticiclon",
             icon = "🔆",
             category = "Sisteme meteo",
-            explanation = "Anticiclonul este o zona de presiune ridicata, unde aerul coboara. Deseori aduce vreme calma si cer mai senin.",
+            explanation = "Anticiclonul este o zonă de presiune ridicată, unde aerul coboară. Deseori aduce vreme calmă și cer mai senin.",
             difficulty = "Avansat"
         ),
         WeatherMemoryCard(
             id = "instability",
-            title = "Instabilitate atmosferica",
+            title = "Instabilitate atmosferică",
             icon = "⚡",
             category = "Dinamica atmosferei",
-            explanation = "Instabilitatea atmosferica apare cand aerul cald poate urca rapid. Ea sustine dezvoltarea norilor verticali si a furtunilor.",
+            explanation = "Instabilitatea atmosferică apare când aerul cald poate urca rapid. Ea susține dezvoltarea norilor verticali și a furtunilor.",
             difficulty = "Avansat"
         ),
         WeatherMemoryCard(
             id = "convection",
-            title = "Convectie",
+            title = "Convecție",
             icon = "↟",
             category = "Dinamica atmosferei",
-            explanation = "Convectia este miscarea ascendenta a aerului cald. Este unul dintre motoarele norilor cumulus si cumulonimbus.",
+            explanation = "Convecția este mișcarea ascendentă a aerului cald. Este unul dintre motoarele norilor cumulus și cumulonimbus.",
             difficulty = "Avansat"
         ),
         WeatherMemoryCard(
             id = "wind_shear",
-            title = "Forfecare a vantului",
+            title = "Forfecare a vântului",
             icon = "↔",
-            category = "Vreme severa",
-            explanation = "Forfecarea vantului inseamna schimbarea vitezei sau directiei vantului cu altitudinea. Poate organiza furtunile puternice.",
+            category = "Vreme severă",
+            explanation = "Forfecarea vântului înseamnă schimbarea vitezei sau direcției vântului cu altitudinea. Poate organiza furtunile puternice.",
             difficulty = "Avansat"
         ),
         WeatherMemoryCard(
@@ -189,15 +189,15 @@ object WeatherMemoryData {
             title = "Front oclus",
             icon = "🟣",
             category = "Fronturi",
-            explanation = "Frontul oclus apare cand un front rece ajunge din urma un front cald. Este frecvent in cicloanele mature.",
+            explanation = "Frontul oclus apare când un front rece ajunge din urmă un front cald. Este frecvent în cicloanele mature.",
             difficulty = "Avansat"
         ),
         WeatherMemoryCard(
             id = "inversion",
-            title = "Inversiune termica",
+            title = "Inversiune termică",
             icon = "⇅",
             category = "Stratificare",
-            explanation = "Inversiunea termica apare cand temperatura creste cu altitudinea pe un strat, blocand amestecul aerului si favorizand ceata sau poluarea.",
+            explanation = "Inversiunea termică apare când temperatura crește cu altitudinea pe un strat, blocând amestecul aerului și favorizând ceața sau poluarea.",
             difficulty = "Avansat"
         )
     )

@@ -104,7 +104,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Conectează-te pentru a accesa Weather Simulator AI!",
+                text = "Conectează-te pentru a accesa Stormy!",
                 color = Color.White.copy(alpha = 0.78f),
                 fontSize = 15.sp
             )

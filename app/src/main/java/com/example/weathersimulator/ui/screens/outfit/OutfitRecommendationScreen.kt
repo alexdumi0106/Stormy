@@ -132,7 +132,7 @@ fun OutfitRecommendationScreen(
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
                         )
                         Text(
-                            text = "Tinute recomandate dupa vreme",
+                            text = "Ținute recomandate dupa starea vremii",
                             color = OutfitTextMuted,
                             style = MaterialTheme.typography.labelSmall
                         )
@@ -757,7 +757,7 @@ private fun WeatherInputCard(
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutfitMetricTile(
                     icon = Icons.Rounded.Thermostat,
-                    label = "Temperatura",
+                    label = "Temperatură",
                     value = current?.temperature.temperatureText(),
                     accent = OutfitAccent,
                     modifier = Modifier.weight(1f)
@@ -774,14 +774,14 @@ private fun WeatherInputCard(
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutfitMetricTile(
                     icon = Icons.Rounded.Air,
-                    label = "Vant",
+                    label = "Vânt",
                     value = current?.windSpeed?.roundToInt()?.let { "$it km/h" } ?: "--",
                     accent = OutfitBlue,
                     modifier = Modifier.weight(1f)
                 )
                 OutfitMetricTile(
                     icon = Icons.Rounded.Umbrella,
-                    label = "Precipitatii",
+                    label = "Precipitații",
                     value = "${precipitation.roundToInt()} mm",
                     accent = OutfitBlue,
                     modifier = Modifier.weight(1f)
@@ -892,7 +892,7 @@ private fun OutfitGenerateButton(
         Spacer(Modifier.width(12.dp))
 
         Text(
-            text = if (isLoading) "AI analizeaza vremea..." else "Genereaza tinuta",
+            text = if (isLoading) "AI analizează vremea..." else "Generează ținuta",
             fontWeight = FontWeight.SemiBold,
             fontSize = 18.sp
         )
@@ -958,7 +958,7 @@ private fun OutfitResultCard(
 
                 else -> {
                     EmptyOutfitState(
-                        text = "Apasa pe buton pentru recomandarea AI detaliata, adaptata vremii de acum."
+                        text = "Apasă pe buton pentru recomandarea AI detaliată, adaptată vremii de acum."
                     )
                 }
             }
@@ -1037,12 +1037,12 @@ private data class OutfitSection(
 private fun parseOutfitRecommendation(text: String): List<OutfitSection> {
     val normalized = text
         .replace("\r\n", "\n")
-        .replace("Recomandare de \u021binut\u0103", "Recomandare de tinuta")
-        .replace("Recomandare de \u0163inut\u0103", "Recomandare de tinuta")
+        .replace("Recomandare de \u021binut\u0103", "Recomandare de ținută")
+        .replace("Recomandare de \u0163inut\u0103", "Recomandare de ținută")
         .replace("Ce NU este necesar", "Ce nu este necesar")
 
     val titles = listOf(
-        "Recomandare de tinuta",
+        "Recomandare de ținută",
         "Accesorii utile",
         "Ce nu este necesar"
     )
@@ -1273,9 +1273,9 @@ private fun outfitTagLine(
         mood == OutfitWeatherMood.RAIN -> "Pregatit pentru umezeala si drumuri rapide"
         mood == OutfitWeatherMood.SNOW -> "Straturi calde pentru confort pe tot parcursul zilei"
         mood == OutfitWeatherMood.COLD -> "Tinuta calda, simpla si usor de ajustat"
-        temperature != null && temperature >= 25.0 && (uvIndex ?: 0.0) >= 5.0 -> "Perfect pentru tinute usoare si culori deschise"
-        temperature != null && temperature >= 22.0 -> "Perfect pentru tinute usoare"
-        else -> "Recomandare personalizata pentru vremea de acum"
+        temperature != null && temperature >= 25.0 && (uvIndex ?: 0.0) >= 5.0 -> "Perfect pentru ținute ușoare și culori deschise"
+        temperature != null && temperature >= 22.0 -> "Perfect pentru ținute ușoare"
+        else -> "Recomandare personalizată pentru vremea de acum"
     }
 }
 
@@ -1321,7 +1321,7 @@ private fun quickOutfitPieces(
     return when {
         temperature >= 28.0 -> listOf(
             OutfitPiece("Tricou", "deschis", OutfitAccent),
-            OutfitPiece("Pantaloni", "scurti", OutfitBlue),
+            OutfitPiece("Pantaloni", "scurți", OutfitBlue),
             OutfitPiece("Sneakers", "albi", OutfitAccent)
         )
 
@@ -1434,13 +1434,13 @@ private fun bonusAdvice(
 ): String {
     return when {
         mood == OutfitWeatherMood.STORM -> "Alege culori inchise, incaltaminte stabila si o piesa impermeabila."
-        mood == OutfitWeatherMood.RAIN -> "O tinuta practica, cu strat impermeabil, va arata bine si ramane comoda."
-        mood == OutfitWeatherMood.SNOW -> "Materialele calduroase si incaltamintea aderenta sunt cele mai importante azi."
-        mood == OutfitWeatherMood.COLD -> "Un strat suplimentar te ajuta sa ramai confortabil fara sa incarci tinuta."
+        mood == OutfitWeatherMood.RAIN -> "O ținută practică, cu strat impermeabil, va arăta bine și rămâne comodă."
+        mood == OutfitWeatherMood.SNOW -> "Materialele călduroase și încălțămintea aderentă sunt cele mai importante azi."
+        mood == OutfitWeatherMood.COLD -> "Un strat suplimentar te ajută să rămâi confortabil fără să încarci ținuta."
         temperature != null && temperature >= 24.0 && (uvIndex ?: 0.0) >= 5.0 ->
-            "Conditiile sunt excelente pentru culori deschise, materiale lejere si accesorii de soare."
+            "Condițiile sunt excelente pentru culori deschise, materiale lejere și accesorii de soare."
         temperature != null && temperature >= 22.0 ->
-            "Azi merge foarte bine o tinuta aerisita, curata si usor de purtat."
-        else -> "Alege piese simple, flexibile, care se pot adapta usor pe parcursul zilei."
+            "Azi merge foarte bine o tinuta aerisita și usor de purtat."
+        else -> "Alege piese simple, flexibile, care se pot adapta uțor pe parcursul zilei."
     }
 }

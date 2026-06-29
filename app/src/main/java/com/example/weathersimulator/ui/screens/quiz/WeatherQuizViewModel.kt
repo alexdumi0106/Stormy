@@ -43,7 +43,7 @@ class WeatherQuizViewModel @Inject constructor(
                     if (questionSet.questions.isEmpty()) {
                         it.copy(
                             phase = WeatherQuizPhase.Setup,
-                            error = "Nu am gasit intrebari pentru quiz."
+                            error = "Nu am găsit întrebări pentru quiz."
                         )
                     } else {
                         it.copy(
@@ -57,7 +57,7 @@ class WeatherQuizViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         phase = WeatherQuizPhase.Setup,
-                        error = "Nu am putut incarca intrebarile. Incearca din nou."
+                        error = "Nu am putut încărca întrebările. Încearcă din nou."
                     )
                 }
             }

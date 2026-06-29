@@ -120,8 +120,8 @@ fun WeatherQuizScreen(
                 WeatherQuizHeader(
                     title = when (state.phase) {
                         WeatherQuizPhase.Setup -> "Meteo Quiz"
-                        WeatherQuizPhase.Loading -> "Se incarca"
-                        WeatherQuizPhase.Playing -> "Intrebarea ${state.currentQuestionIndex + 1}"
+                        WeatherQuizPhase.Loading -> "Se încarcă"
+                        WeatherQuizPhase.Playing -> "Întrebarea ${state.currentQuestionIndex + 1}"
                         WeatherQuizPhase.Finished -> "Rezultat"
                     },
                     subtitle = "Teste meteo",
@@ -178,7 +178,7 @@ private fun WeatherQuizHeader(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Inapoi",
+                contentDescription = "Înapoi",
                 tint = Color.White
             )
         }
@@ -667,7 +667,7 @@ private fun QuestionCountButton(
                 lineHeight = 36.sp
             )
             Text(
-                text = "intrebari",
+                text = "întrebări",
                 color = labelColor,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp,
@@ -820,7 +820,7 @@ private fun QuizStartButton(
             Spacer(Modifier.size(16.dp))
 
             Text(
-                text = "Start quiz",
+                text = "Începe quizul",
                 color = Color(0xFF08233A),
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 22.sp,
@@ -881,14 +881,14 @@ private fun QuizReadyCard(selectedCount: Int) {
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 Text(
-                    text = "Esti gata sa inveti?",
+                    text = "Ești gata să înveți?",
                     color = QuizCyan,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 18.sp,
                     lineHeight = 21.sp
                 )
                 Text(
-                    text = "Testul tau de $selectedCount intrebari incepe acum!",
+                    text = "Testul tău de $selectedCount întrebări începe acum!",
                     color = Color.White,
                     fontSize = 15.sp,
                     lineHeight = 22.sp
@@ -1221,13 +1221,13 @@ private fun WeatherQuizLoadingCard() {
             )
             Spacer(Modifier.height(18.dp))
             Text(
-                text = "Aleg intrebari random din Firebase...",
+                text = "Aleg întrebări random din Firebase...",
                 color = Color.White,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 17.sp
             )
             Text(
-                text = "Incerc sa evit intrebarile primite recent.",
+                text = "Încerc să evit întrebările primite recent.",
                 color = QuizMutedText,
                 fontSize = 14.sp
             )
@@ -1302,7 +1302,7 @@ private fun WeatherQuizPlaying(
                     )
                 ) {
                     Text(
-                        text = if (state.isLastQuestion) "Vezi scorul" else "Urmatoarea intrebare",
+                        text = if (state.isLastQuestion) "Vezi scorul" else "Următoarea întrebare",
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 15.sp
                     )
@@ -1367,13 +1367,13 @@ private fun QuestionMetaRow(question: WeatherQuizQuestion) {
     ) {
         if (question.category.isNotBlank()) {
             QuizTinyChip(
-                text = question.category,
+                text = question.category.toQuizCategoryLabel(),
                 accent = QuizCyan
             )
         }
         if (question.difficulty.isNotBlank()) {
             QuizTinyChip(
-                text = question.difficulty,
+                text = question.difficulty.toQuizDifficultyLabel(),
                 accent = QuizYellow
             )
         }
@@ -1538,7 +1538,7 @@ private fun WeatherQuizResult(
                         )
                     ) {
                         Text(
-                            text = "Inapoi",
+                            text = "Înapoi",
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -1587,7 +1587,7 @@ private fun WrongAnswerReview(state: WeatherQuizUiState) {
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Text(
-                text = if (wrongAnswers.isEmpty()) "Toate raspunsurile au fost corecte" else "Raspunsuri de revizuit",
+                text = if (wrongAnswers.isEmpty()) "Toate răspunsurile au fost corecte" else "Răspunsuri de revizuit",
                 color = Color.White,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 20.sp
@@ -1595,7 +1595,7 @@ private fun WrongAnswerReview(state: WeatherQuizUiState) {
 
             if (wrongAnswers.isEmpty()) {
                 Text(
-                    text = "Perfect. Ai parcurs testul fara greseli.",
+                    text = "Perfect. Ai parcurs testul fără greșeli.",
                     color = QuizMutedText,
                     fontSize = 15.sp,
                     lineHeight = 21.sp
@@ -1680,8 +1680,27 @@ private fun resultMessage(score: Int, total: Int): String {
 
     return when {
         ratio >= 0.9f -> "Excelent. Ai prins foarte bine conceptele meteo."
-        ratio >= 0.7f -> "Foarte bine. Mai sunt doar cateva detalii de fixat."
-        ratio >= 0.5f -> "Bun inceput. Explicatiile de mai jos te ajuta sa inchizi golurile."
-        else -> "Merita reluat testul. Fiecare raspuns gresit are o explicatie scurta."
+        ratio >= 0.7f -> "Foarte bine. Mai sunt doar câteva detalii de fixat."
+        ratio >= 0.5f -> "Bun început. Explicațiile de mai jos te ajută să închizi golurile."
+        else -> "Merită reluat testul. Fiecare răspuns greșit are o explicație scurtă."
+    }
+}
+
+private fun String.toQuizCategoryLabel(): String {
+    return when (trim().lowercase()) {
+        "meteorologie" -> "Meteorologie"
+        "nori" -> "Nori"
+        "climatologie" -> "Climatologie"
+        "fenomene_extreme", "fenomene extreme" -> "Fenomene extreme"
+        else -> replace("_", " ").replaceFirstChar { it.titlecase() }
+    }
+}
+
+private fun String.toQuizDifficultyLabel(): String {
+    return when (trim().lowercase()) {
+        "easy", "usor", "ușor" -> "Ușor"
+        "medium", "mediu" -> "Mediu"
+        "hard", "advanced", "avansat" -> "Avansat"
+        else -> replace("_", " ").replaceFirstChar { it.titlecase() }
     }
 }

@@ -121,7 +121,7 @@ private fun WeatherMemoryResultHeader(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Inapoi",
+                contentDescription = "Înapoi",
                 tint = Color.White
             )
         }
@@ -149,11 +149,11 @@ private fun WeatherMemoryResultHeader(
 @Composable
 private fun WeatherMemoryResultHero(state: WeatherMemoryGameState) {
     val completed = state.matchedPairs == state.totalPairs && state.totalPairs > 0
-    val title = if (completed) "Felicitari! Ai terminat jocul 🎉" else "Tura s-a incheiat"
+    val title = if (completed) "Felicitări! Ai terminat jocul 🎉" else "Tura s-a încheiat"
     val subtitle = if (completed) {
-        "Ai gasit toate perechile in ${state.elapsedSeconds}s, cu ${state.accuracyPercent}% acuratete."
+        "Ai găsit toate perechile în ${state.elapsedSeconds}s, cu ${state.accuracyPercent}% acuratețe."
     } else {
-        "Ai descoperit ${state.matchedPairs}/${state.totalPairs} perechi. Poti relua nivelul pentru un scor mai bun."
+        "Ai descoperit ${state.matchedPairs}/${state.totalPairs} perechi. Poți relua nivelul pentru un scor mai bun."
     }
 
     Column(
@@ -227,7 +227,7 @@ private fun WeatherMemoryResultStats(state: WeatherMemoryGameState) {
                 modifier = Modifier.weight(1f)
             )
             ResultStatCard(
-                label = "Incercari",
+                label = "Încercări",
                 value = state.attempts.toString(),
                 icon = Icons.Rounded.Flag,
                 accent = ResultRed,
@@ -243,7 +243,7 @@ private fun WeatherMemoryResultStats(state: WeatherMemoryGameState) {
                 modifier = Modifier.weight(1f)
             )
             ResultStatCard(
-                label = "Acuratete",
+                label = "Acuratețe",
                 value = "${state.accuracyPercent}%",
                 icon = Icons.Rounded.EmojiEvents,
                 accent = ResultYellow,
@@ -252,7 +252,7 @@ private fun WeatherMemoryResultStats(state: WeatherMemoryGameState) {
         }
         Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
             ResultStatCard(
-                label = "Greseli",
+                label = "Greșeli",
                 value = state.mistakes.toString(),
                 icon = Icons.Rounded.Flag,
                 accent = ResultRed,
@@ -323,7 +323,7 @@ private fun LearnedCardsList(cards: List<WeatherMemoryCard>) {
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
-            text = "Ai invatat despre:",
+            text = "Ai învățat despre:",
             color = Color.White,
             fontWeight = FontWeight.ExtraBold,
             fontSize = 18.sp,
@@ -332,7 +332,7 @@ private fun LearnedCardsList(cards: List<WeatherMemoryCard>) {
 
         if (cards.isEmpty()) {
             Text(
-                text = "Nu ai descoperit inca un fenomen. O tura noua poate schimba rapid asta.",
+                text = "Nu ai descoperit încă un fenomen. O tură nouă poate schimba rapid asta.",
                 color = ResultMutedText,
                 fontSize = 14.sp,
                 lineHeight = 20.sp
@@ -405,7 +405,7 @@ private fun WeatherMemoryResultActions(
             )
             Spacer(Modifier.size(8.dp))
             Text(
-                text = "Joaca din nou",
+                text = "Joacă din nou",
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 16.sp
             )
@@ -446,7 +446,7 @@ private fun WeatherMemoryResultActions(
                 contentPadding = PaddingValues(horizontal = 8.dp)
             ) {
                 Text(
-                    text = "Inapoi la jocuri",
+                    text = "Înapoi la jocuri",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
                     maxLines = 1

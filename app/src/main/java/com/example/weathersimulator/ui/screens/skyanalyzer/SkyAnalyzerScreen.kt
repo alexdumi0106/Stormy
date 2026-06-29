@@ -240,24 +240,31 @@ fun SkyAnalyzerScreen(
                 )
             }
         ) { padding ->
+            val hasPhoto = state.photo != null
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 30.dp, vertical = 30.dp),
-                verticalArrangement = Arrangement.spacedBy(22.dp)
+                    .padding(
+                        horizontal = if (hasPhoto) 24.dp else 30.dp,
+                        vertical = if (hasPhoto) 18.dp else 30.dp
+                    ),
+                verticalArrangement = Arrangement.spacedBy(if (hasPhoto) 16.dp else 22.dp)
             ) {
-                SkyPhotoHero(state = state)
+                SkyPhotoHero(
+                    state = state,
+                    compact = hasPhoto
+                )
 
                 SkyAnalyzerActionTiles(
+                    compact = hasPhoto,
                     onGalleryClick = { galleryLauncher.launch("image/*") },
                     onCameraClick = ::openCamera
                 )
 
-                Box(modifier = Modifier.padding(top = 120.dp)) {
-                    SkyPrivacyCard()
-                }
+                SkyPrivacyCard()
 
                 state.permissionMessage?.let { message ->
                     Text(
@@ -292,12 +299,13 @@ fun SkyAnalyzerScreen(
 
 @Composable
 private fun SkyPhotoHero(
-    state: SkyAnalyzerUiState
+    state: SkyAnalyzerUiState,
+    compact: Boolean
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp)
+            .height(if (compact) 176.dp else 300.dp)
             .clip(RoundedCornerShape(28.dp))
             .background(
                 Brush.verticalGradient(
@@ -329,7 +337,7 @@ private fun SkyPhotoHero(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .height(132.dp)
+                    .height(if (compact) 96.dp else 132.dp)
                     .background(
                         Brush.verticalGradient(
                             listOf(
@@ -342,11 +350,11 @@ private fun SkyPhotoHero(
             Text(
                 text = "Fotografie selectată",
                 color = Color.White,
-                fontSize = 22.sp,
+                fontSize = if (compact) 20.sp else 22.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp)
+                    .padding(bottom = if (compact) 18.dp else 24.dp)
             )
         }
 
@@ -456,18 +464,20 @@ private fun PhoneCameraMockup() {
 
 @Composable
 private fun SkyAnalyzerActionTiles(
+    compact: Boolean,
     onGalleryClick: () -> Unit,
     onCameraClick: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(20.dp)
+        horizontalArrangement = Arrangement.spacedBy(if (compact) 14.dp else 20.dp)
     ) {
         SkyAnalyzerActionTile(
             title = "Galerie",
             subtitle = "Alege din galerie",
             icon = Icons.Rounded.PhotoLibrary,
             onClick = onGalleryClick,
+            compact = compact,
             modifier = Modifier.weight(1f),
             brush = Brush.verticalGradient(
                 listOf(
@@ -482,6 +492,7 @@ private fun SkyAnalyzerActionTiles(
             subtitle = "Fă o fotografie",
             icon = Icons.Rounded.PhotoCamera,
             onClick = onCameraClick,
+            compact = compact,
             modifier = Modifier.weight(1f),
             brush = Brush.linearGradient(
                 listOf(
@@ -500,12 +511,13 @@ private fun SkyAnalyzerActionTile(
     subtitle: String,
     icon: ImageVector,
     onClick: () -> Unit,
+    compact: Boolean,
     modifier: Modifier = Modifier,
     brush: Brush
 ) {
     Box(
         modifier = modifier
-            .height(136.dp)
+            .height(if (compact) 108.dp else 136.dp)
             .clip(RoundedCornerShape(22.dp))
             .background(brush)
             .border(
@@ -521,7 +533,7 @@ private fun SkyAnalyzerActionTile(
         ) {
             Box(
                 modifier = Modifier
-                    .size(58.dp)
+                    .size(if (compact) 48.dp else 58.dp)
                     .clip(RoundedCornerShape(22.dp))
                     .background(Color.White.copy(alpha = 0.14f)),
                 contentAlignment = Alignment.Center
@@ -530,22 +542,22 @@ private fun SkyAnalyzerActionTile(
                     imageVector = icon,
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.size(34.dp)
+                    modifier = Modifier.size(if (compact) 28.dp else 34.dp)
                 )
             }
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(if (compact) 9.dp else 14.dp))
             Text(
                 text = title,
                 color = Color.White,
-                fontSize = 23.sp,
+                fontSize = if (compact) 19.sp else 23.sp,
                 fontWeight = FontWeight.ExtraBold,
                 maxLines = 1
             )
-            Spacer(Modifier.height(5.dp))
+            Spacer(Modifier.height(if (compact) 3.dp else 5.dp))
             Text(
                 text = subtitle,
                 color = Color.White.copy(alpha = 0.70f),
-                fontSize = 15.sp,
+                fontSize = if (compact) 13.sp else 15.sp,
                 maxLines = 1
             )
         }

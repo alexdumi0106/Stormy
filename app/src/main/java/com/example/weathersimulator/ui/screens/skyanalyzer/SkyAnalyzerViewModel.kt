@@ -75,7 +75,7 @@ class SkyAnalyzerViewModel @Inject constructor(
                             aiObservation = fallbackObservation(localResult)
                         ),
                         isGeneratingAiObservation = false,
-                        aiObservationError = "Nu am putut contacta serviciul AI. Afisez observatia generata din analiza imaginii."
+                        aiObservationError = e.toSkyAiObservationErrorMessage()
                     )
                 }
             }
@@ -168,5 +168,26 @@ class SkyAnalyzerViewModel @Inject constructor(
             lower.contains("unable to allocate cpu buffer") ||
             lower.contains("status code: 500") ||
             lower.contains("panic:")
+    }
+
+    private fun Throwable.toSkyAiObservationErrorMessage(): String {
+        val lower = message.orEmpty().lowercase()
+
+        return when {
+            lower.contains("unable to allocate") ||
+                lower.contains("cpu_repack") ||
+                lower.contains("llama runner process has terminated") ->
+                "Serviciul AI principal nu a raspuns, iar modelul local nu a putut porni din cauza memoriei insuficiente. Afisez observatia generata din analiza imaginii."
+
+            lower.contains("backend local error") ->
+                "Modelul local a returnat o eroare. Afisez observatia generata din analiza imaginii."
+
+            lower.contains("backend error") ||
+                lower.contains("gemini") ->
+                "Serviciul AI nu a putut genera observatia acum. Afisez observatia generata din analiza imaginii."
+
+            else ->
+                "Nu am putut contacta serviciul AI. Afisez observatia generata din analiza imaginii."
+        }
     }
 }

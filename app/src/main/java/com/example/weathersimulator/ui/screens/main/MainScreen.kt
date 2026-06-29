@@ -117,6 +117,7 @@ fun WeatherHomeSection(
     weatherStory: String?,
     isWeatherStoryLoading: Boolean,
     weatherStoryError: String?,
+    weatherStoryButtonColor: Color,
     onWeatherDataClick: () -> Unit,
     onSkyAnalyzerClick: () -> Unit,
     onOutfitAiClick: () -> Unit,
@@ -399,7 +400,9 @@ fun WeatherHomeSection(
         WeatherStoryCard(
             weatherStory = weatherStory,
             isLoading = isWeatherStoryLoading,
-            error = weatherStoryError
+            error = weatherStoryError,
+            buttonColor = weatherStoryButtonColor,
+            onGenerateClick = weatherVm::generateWeatherStory
         )
     }
 
@@ -429,12 +432,10 @@ fun WeatherHomeSection(
 fun WeatherStoryCard(
     weatherStory: String?,
     isLoading: Boolean,
-    error: String?
+    error: String?,
+    buttonColor: Color,
+    onGenerateClick: () -> Unit
 ) {
-    if (!isLoading && weatherStory.isNullOrBlank() && error.isNullOrBlank()) {
-        return
-    }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -482,7 +483,7 @@ fun WeatherStoryCard(
 
                 !weatherStory.isNullOrBlank() -> {
                     Text(
-                        text = weatherStory,
+                        text = weatherStory.roundWeatherStoryNumbers(),
                         color = Color.White.copy(alpha = 0.92f),
                         style = MaterialTheme.typography.bodyMedium,
                         lineHeight = 20.sp
@@ -495,8 +496,68 @@ fun WeatherStoryCard(
                         color = Color.White.copy(alpha = 0.82f),
                         style = MaterialTheme.typography.bodyMedium
                     )
+
+                    WeatherStoryGenerateButton(
+                        enabled = true,
+                        buttonColor = buttonColor,
+                        onClick = onGenerateClick
+                    )
+                }
+
+                else -> {
+                    WeatherStoryGenerateButton(
+                        enabled = true,
+                        buttonColor = buttonColor,
+                        onClick = onGenerateClick
+                    )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun WeatherStoryGenerateButton(
+    enabled: Boolean,
+    buttonColor: Color,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = buttonColor.copy(alpha = 0.92f),
+            contentColor = Color.White,
+            disabledContainerColor = Color.White.copy(alpha = 0.12f),
+            disabledContentColor = Color.White.copy(alpha = 0.65f)
+        )
+    ) {
+        Text("Vezi cum va fi vremea!")
+    }
+}
+
+private val WeatherStoryDecimalRegex = Regex("""-?\d+[.,]\d+""")
+
+private fun String.roundWeatherStoryNumbers(): String {
+    return WeatherStoryDecimalRegex.replace(this) { match ->
+        val rawValue = match.value
+        val separatorIndex = rawValue.indexOfAny(charArrayOf('.', ','))
+        val wholePart = rawValue.substring(0, separatorIndex).trimStart('-')
+        val decimalPart = rawValue.substring(separatorIndex + 1)
+        val previousChar = getOrNull(match.range.first - 1)
+        val nextChar = getOrNull(match.range.last + 1)
+        val looksLikeDateChain = previousChar == '.' || nextChar == '.'
+        val looksLikeShortDate = rawValue.contains('.') &&
+            wholePart.length in 1..2 &&
+            decimalPart.length == 2 &&
+            wholePart.toIntOrNull()?.let { it in 1..31 } == true &&
+            decimalPart.toIntOrNull()?.let { it in 1..12 } == true
+
+        if (looksLikeDateChain || looksLikeShortDate) {
+            rawValue
+        } else {
+            rawValue.replace(',', '.').toDoubleOrNull()?.roundToInt()?.toString() ?: rawValue
         }
     }
 }
@@ -535,6 +596,7 @@ fun MainScreen(navController: NavController) {
         code = weatherState.data?.current?.weatherCode ?: 0,
         isDay = weatherState.data?.current?.isDay == 1
     )
+    val weatherStoryButtonColor = baseBackground.getOrElse(1) { baseBackground.first() }
 
     val openWeatherHistory = {
         weatherVm.setHistoryMode(true)
@@ -620,6 +682,7 @@ fun MainScreen(navController: NavController) {
                     weatherStory = weatherState.weatherStory,
                     isWeatherStoryLoading = weatherState.isWeatherStoryLoading,
                     weatherStoryError = weatherState.weatherStoryError,
+                    weatherStoryButtonColor = weatherStoryButtonColor,
                     onWeatherDataClick = openWeatherHistory,
                     onSkyAnalyzerClick = openSkyAnalyzer,
                     onOutfitAiClick = openOutfitAi,

@@ -1,20 +1,20 @@
 package com.example.weathersimulator.data.remote.ai
 
 data class WeatherStoryRequest(
-    val temperature: Double?,
-    val apparentTemperature: Double?,
+    val temperature: Int?,
+    val apparentTemperature: Int?,
     val humidity: Int?,
-    val windSpeed: Double?,
-    val pressure: Double?,
+    val windSpeed: Int?,
+    val pressure: Int?,
     val weatherCode: Int?,
     val cloudCover: Int?,
     val nextHours: List<String>,
-    val nextTemperatures: List<Double>,
-    val nextPrecipitation: List<Double>,
-    val nextWindSpeed: List<Double>,
+    val nextTemperatures: List<Int>,
+    val nextPrecipitation: List<Int>,
+    val nextWindSpeed: List<Int>,
     val nextWeatherCodes: List<Int>,
     val dailyDates: List<String>,
-    val dailyMaxTemperatures: List<Double>,
-    val dailyMinTemperatures: List<Double>,
+    val dailyMaxTemperatures: List<Int>,
+    val dailyMinTemperatures: List<Int>,
     val dailyWeatherCodes: List<Int>
 )

@@ -108,7 +108,7 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Creează contul tău Weather Simulator AI",
+                text = "Creează contul tău pentru aplicația Stormy!",
                 color = Color.White.copy(alpha = 0.82f),
                 fontSize = 14.sp
             )

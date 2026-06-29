@@ -172,7 +172,7 @@ private fun WeatherMemoryHeader(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Inapoi",
+                contentDescription = "Înapoi",
                 tint = Color.White
             )
         }
@@ -188,7 +188,7 @@ private fun WeatherMemoryHeader(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = "Gaseste perechile meteo",
+                text = "Găsește perechile meteo",
                 color = MemoryTextMuted,
                 fontSize = 16.sp,
                 lineHeight = 19.sp,
@@ -305,7 +305,7 @@ private fun WeatherMemoryStats(state: WeatherMemoryGameState) {
             modifier = Modifier.weight(1f)
         )
         WeatherMemoryStatPill(
-            label = "Incercari",
+            label = "Încercări",
             value = state.attempts.toString(),
             icon = Icons.Rounded.Flag,
             accent = MemoryRed,
@@ -591,7 +591,7 @@ private fun WeatherMemoryDiscoveryDialog(
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    text = "Continua",
+                    text = "Continuă",
                     fontWeight = FontWeight.Bold
                 )
             }
