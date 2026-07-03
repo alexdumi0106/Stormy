@@ -146,17 +146,19 @@ private fun computeWeatherDescription(
 @Composable
 fun SimulatorScreen(
     navController: NavController,
+    simulatorViewModel: SimulatorViewModel = hiltViewModel(),
     pressureViewModel: PressureViewModel = hiltViewModel()
 ) {
     LaunchedEffect(Unit) {
         Log.d("SimulatorScreen", "SimulatorScreen started")
     }
 
-    var temperature by remember { mutableStateOf(20f) }
-    var humidity by remember { mutableStateOf(50f) }
-    var pressure by remember { mutableStateOf(1013f) }
-    var wind by remember { mutableStateOf(10f) }
-    var cloudCoverage by remember { mutableStateOf(0f) }
+    val simulatorState by simulatorViewModel.uiState.collectAsState()
+    val temperature = simulatorState.temperature
+    val humidity = simulatorState.humidity
+    val pressure = simulatorState.pressure
+    val wind = simulatorState.wind
+    val cloudCoverage = simulatorState.cloudCoverage
 
     var showAiHelpPopup by remember { mutableStateOf(true) }
     val context = LocalContext.current
@@ -181,7 +183,7 @@ fun SimulatorScreen(
     val sensorPressure = pressureSensorState.pressureHpa
     LaunchedEffect(useBarometer, sensorPressure) {
         if (useBarometer && sensorPressure != null) {
-            pressure = sensorPressure
+            simulatorViewModel.onSensorPressureChange(sensorPressure)
         }
     }
 
@@ -407,7 +409,7 @@ fun SimulatorScreen(
                                 modifier = Modifier.height(28.dp),
                                 value = temperature,
                                 onValueChange = {
-                                    temperature = it.roundToInt().toFloat()
+                                    simulatorViewModel.onTemperatureChange(it)
                                 },
                                 valueRange = -20f..50f,
                                 steps = 69,
@@ -423,7 +425,7 @@ fun SimulatorScreen(
                                 modifier = Modifier.height(28.dp),
                                 value = humidity,
                                 onValueChange = { v ->
-                                    humidity = (v / 10f).roundToInt() * 10f
+                                    simulatorViewModel.onHumidityChange(v)
                                 },
                                 valueRange = 0f..100f,
                                 steps = 9,
@@ -474,7 +476,7 @@ fun SimulatorScreen(
                                 modifier = Modifier.height(28.dp),
                                 value = pressure,
                                 onValueChange = { p ->
-                                    pressure = p.roundToInt().toFloat()
+                                    simulatorViewModel.onManualPressureChange(p)
                                 },
                                 valueRange = 950f..1050f,
                                 steps = 99,
@@ -505,7 +507,7 @@ fun SimulatorScreen(
                                 modifier = Modifier.height(28.dp),
                                 value = wind,
                                 onValueChange = { w ->
-                                    wind = (w / 10f).roundToInt() * 10f
+                                    simulatorViewModel.onWindChange(w)
                                 },
                                 valueRange = 0f..120f,
                                 steps = 11,
@@ -521,7 +523,7 @@ fun SimulatorScreen(
                                 modifier = Modifier.height(28.dp),
                                 value = cloudCoverage,
                                 onValueChange = { value ->
-                                    cloudCoverage = (value / 20f).roundToInt() * 20f
+                                    simulatorViewModel.onCloudCoverageChange(value)
                                 },
                                 valueRange = 0f..100f,
                                 steps = 4,

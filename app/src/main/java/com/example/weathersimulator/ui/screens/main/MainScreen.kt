@@ -104,6 +104,165 @@ import androidx.compose.material.icons.rounded.Checkroom
 import androidx.compose.material.icons.rounded.School
 
 @Composable
+private fun WeatherHomeHeader(
+    locationName: String,
+    onToggleSearch: () -> Unit,
+    onWeatherDataClick: () -> Unit,
+    onSkyAnalyzerClick: () -> Unit,
+    onOutfitAiClick: () -> Unit,
+    onNatureImpactClick: () -> Unit,
+    onWeatherQuizClick: () -> Unit,
+    onWeatherGamesClick: () -> Unit
+) {
+    val cityName = locationName.substringBefore(",").ifBlank { "Locația ta" }
+    var showQuickMenu by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier.align(Alignment.TopEnd)
+        ) {
+            IconButton(
+                onClick = { showQuickMenu = true }
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Menu,
+                    contentDescription = "Meniu rapid",
+                    tint = Color.White.copy(alpha = 0.92f),
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+
+            DropdownMenu(
+                expanded = showQuickMenu,
+                onDismissRequest = { showQuickMenu = false },
+                modifier = Modifier.background(Color(0xFF173A5E))
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Arhivă", color = Color.White) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.DateRange,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    },
+                    colors = MenuDefaults.itemColors(textColor = Color.White),
+                    onClick = {
+                        showQuickMenu = false
+                        onWeatherDataClick()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Sky AI", color = Color.White) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.PhotoCamera,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    },
+                    colors = MenuDefaults.itemColors(textColor = Color.White),
+                    onClick = {
+                        showQuickMenu = false
+                        onSkyAnalyzerClick()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Outfit AI", color = Color.White) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Checkroom,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    },
+                    colors = MenuDefaults.itemColors(textColor = Color.White),
+                    onClick = {
+                        showQuickMenu = false
+                        onOutfitAiClick()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Natura", color = Color.White) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.WbSunny,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    },
+                    colors = MenuDefaults.itemColors(textColor = Color.White),
+                    onClick = {
+                        showQuickMenu = false
+                        onNatureImpactClick()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Meteo Quiz", color = Color.White) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.School,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    },
+                    colors = MenuDefaults.itemColors(textColor = Color.White),
+                    onClick = {
+                        showQuickMenu = false
+                        onWeatherQuizClick()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Jocuri", color = Color.White) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.SportsEsports,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    },
+                    colors = MenuDefaults.itemColors(textColor = Color.White),
+                    onClick = {
+                        showQuickMenu = false
+                        onWeatherGamesClick()
+                    }
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier.align(Alignment.TopCenter),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = cityName,
+                color = Color.White,
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 30.sp
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            IconButton(onClick = onToggleSearch) {
+                Icon(
+                    imageVector = Icons.Rounded.Search,
+                    contentDescription = "Caută oraș",
+                    tint = Color.White.copy(alpha = 0.9f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun WeatherHomeSection(
     locationName: String,
     showSearchCard: Boolean,
@@ -125,12 +284,18 @@ fun WeatherHomeSection(
     onWeatherQuizClick: () -> Unit,
     onWeatherGamesClick: () -> Unit
 ) {
-    val cityName = locationName.substringBefore(",").ifBlank { "Locația ta" }
-    var showQuickMenu by remember { mutableStateOf(false) }
-
-    
 
     if (error != null) {
+        WeatherHomeHeader(
+            locationName = locationName,
+            onToggleSearch = onToggleSearch,
+            onWeatherDataClick = onWeatherDataClick,
+            onSkyAnalyzerClick = onSkyAnalyzerClick,
+            onOutfitAiClick = onOutfitAiClick,
+            onNatureImpactClick = onNatureImpactClick,
+            onWeatherQuizClick = onWeatherQuizClick,
+            onWeatherGamesClick = onWeatherGamesClick
+        )
         Text(
             text = "Eroare meteo: $error",
             color = Color.White,
@@ -141,6 +306,16 @@ fun WeatherHomeSection(
     }
 
     if (data?.current == null) {
+        WeatherHomeHeader(
+            locationName = locationName,
+            onToggleSearch = onToggleSearch,
+            onWeatherDataClick = onWeatherDataClick,
+            onSkyAnalyzerClick = onSkyAnalyzerClick,
+            onOutfitAiClick = onOutfitAiClick,
+            onNatureImpactClick = onNatureImpactClick,
+            onWeatherQuizClick = onWeatherQuizClick,
+            onWeatherGamesClick = onWeatherGamesClick
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -179,149 +354,16 @@ fun WeatherHomeSection(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Box(
-                modifier = Modifier.align(Alignment.TopEnd)
-            ) {
-                IconButton(
-                    onClick = { showQuickMenu = true }
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Menu,
-                        contentDescription = "Meniu rapid",
-                        tint = Color.White.copy(alpha = 0.92f),
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
-
-                DropdownMenu(
-                    expanded = showQuickMenu,
-                    onDismissRequest = { showQuickMenu = false },
-                    modifier = Modifier.background(Color(0xFF173A5E))
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Arhivă", color = Color.White) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Rounded.DateRange,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        },
-                        colors = MenuDefaults.itemColors(textColor = Color.White),
-                        onClick = {
-                            showQuickMenu = false
-                            onWeatherDataClick()
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        text = { Text("Sky AI", color = Color.White) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Rounded.PhotoCamera,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        },
-                        colors = MenuDefaults.itemColors(textColor = Color.White),
-                        onClick = {
-                            showQuickMenu = false
-                            onSkyAnalyzerClick()
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        text = { Text("Outfit AI", color = Color.White) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Rounded.Checkroom,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        },
-                        colors = MenuDefaults.itemColors(textColor = Color.White),
-                        onClick = {
-                            showQuickMenu = false
-                            onOutfitAiClick()
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        text = { Text("Natura", color = Color.White) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Rounded.WbSunny,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        },
-                        colors = MenuDefaults.itemColors(textColor = Color.White),
-                        onClick = {
-                            showQuickMenu = false
-                            onNatureImpactClick()
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        text = { Text("Meteo Quiz", color = Color.White) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Rounded.School,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        },
-                        colors = MenuDefaults.itemColors(textColor = Color.White),
-                        onClick = {
-                            showQuickMenu = false
-                            onWeatherQuizClick()
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        text = { Text("Jocuri", color = Color.White) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Rounded.SportsEsports,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        },
-                        colors = MenuDefaults.itemColors(textColor = Color.White),
-                        onClick = {
-                            showQuickMenu = false
-                            onWeatherGamesClick()
-                        }
-                    )
-                }
-            }
-
-            Row(
-                modifier = Modifier.align(Alignment.TopCenter),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = cityName,
-                    color = Color.White,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 30.sp
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                IconButton(onClick = onToggleSearch) {
-                    Icon(
-                        imageVector = Icons.Rounded.Search,
-                        contentDescription = "Caută oraș",
-                        tint = Color.White.copy(alpha = 0.9f)
-                    )
-                }
-            }
-        }
+        WeatherHomeHeader(
+            locationName = locationName,
+            onToggleSearch = onToggleSearch,
+            onWeatherDataClick = onWeatherDataClick,
+            onSkyAnalyzerClick = onSkyAnalyzerClick,
+            onOutfitAiClick = onOutfitAiClick,
+            onNatureImpactClick = onNatureImpactClick,
+            onWeatherQuizClick = onWeatherQuizClick,
+            onWeatherGamesClick = onWeatherGamesClick
+        )
 
         AnimatedVisibility(
             visible = showSearchCard,
@@ -527,7 +569,7 @@ private fun WeatherStoryGenerateButton(
         enabled = enabled,
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = buttonColor.copy(alpha = 0.92f),
+            containerColor = buttonColor,
             contentColor = Color.White,
             disabledContainerColor = Color.White.copy(alpha = 0.12f),
             disabledContentColor = Color.White.copy(alpha = 0.65f)
@@ -596,7 +638,7 @@ fun MainScreen(navController: NavController) {
         code = weatherState.data?.current?.weatherCode ?: 0,
         isDay = weatherState.data?.current?.isDay == 1
     )
-    val weatherStoryButtonColor = baseBackground.getOrElse(1) { baseBackground.first() }
+    val weatherStoryButtonColor = Color.White.copy(alpha = 0.20f)
 
     val openWeatherHistory = {
         weatherVm.setHistoryMode(true)

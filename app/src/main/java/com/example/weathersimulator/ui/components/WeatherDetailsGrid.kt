@@ -217,7 +217,7 @@ private fun moonPhaseIcon(phaseName: String): String {
     }
 }
 
-// Calcul pentru punctul de roua (formula aproximativă)
+// Calcul pentru punctul de roua (formula aproximativa)
 private fun calculateDewPoint(temp: Double, humidity: Int): Int {
     if (humidity <= 0) return temp.roundToInt()
     val a = 17.27

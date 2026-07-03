@@ -736,14 +736,7 @@ class WeatherViewModel @Inject constructor(
     }
 
     private fun resolveComparisonDate(selectedDate: LocalDate): LocalDate {
-        val latestAvailableDate = LocalDate.now().minusDays(1)
-        val candidate2026 = LocalDate.of(2026, selectedDate.month, selectedDate.dayOfMonth)
-
-        return if (!candidate2026.isAfter(latestAvailableDate)) {
-            candidate2026
-        } else {
-            LocalDate.of(2025, selectedDate.month, selectedDate.dayOfMonth)
-        }
+        return selectedDate.minusYears(1)
     }
 
     private fun loadClimateComparison(

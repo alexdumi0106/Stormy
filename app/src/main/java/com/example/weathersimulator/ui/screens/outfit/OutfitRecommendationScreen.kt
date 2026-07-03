@@ -1362,7 +1362,7 @@ private fun calculateOutfitScore(
     if (temperature == null) return 0
 
     val feelsLike = apparentTemperature ?: temperature
-    var score = 96
+    var score = 100
 
     score -= when {
         feelsLike < 0.0 -> 18
@@ -1382,7 +1382,7 @@ private fun calculateOutfitScore(
     if ((windSpeed ?: 0.0) >= 25.0) score -= 8
     if ((uvIndex ?: 0.0) >= 7.0) score -= 3
 
-    return score.coerceIn(70, 98)
+    return score.coerceIn(70, 100)
 }
 
 private fun comfortLevel(score: Int?): String {
