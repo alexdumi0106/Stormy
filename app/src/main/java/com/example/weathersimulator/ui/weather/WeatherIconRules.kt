@@ -12,8 +12,7 @@ object WeatherIconRules {
     fun resolve(weatherCode: Int, isDay: Boolean, cloudCover: Int?): WeatherVisual {
         val cloud = normalizeCloudCover(cloudCover, weatherCode)
         val hasSomeClearSky = cloud <= 70
-
-        // Storm detection codes (with priority over WMO standard codes)
+        
         when (weatherCode) {
             998 -> {
                 // Furtună puternică (score >= 11)

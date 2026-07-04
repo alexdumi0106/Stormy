@@ -1,4 +1,11 @@
 package com.example.weathersimulator.domain.usecase
 
-class ResetPasswordUseCase {
+import com.example.weathersimulator.data.repository.UserRepository
+import javax.inject.Inject
+
+class ResetPasswordUseCase @Inject constructor(
+    private val repository: UserRepository
+) {
+    suspend operator fun invoke(email: String): Result<Unit> =
+        repository.resetPassword(email)
 }

@@ -84,13 +84,13 @@ data class HourlyForecastItemUi(
 )
 
 data class HistoryMonthUi(
-    val key: String,   // ex: 2026-03
-    val label: String  // ex: martie 2026
+    val key: String,  
+    val label: String  
 )
 
 data class HistoryDayUi(
-    val key: String,   // ex: 2026-03-01
-    val label: String  // ex: 1 martie 2026
+    val key: String,   
+    val label: String 
 )
 
 data class HistoryMonthSummaryUi(

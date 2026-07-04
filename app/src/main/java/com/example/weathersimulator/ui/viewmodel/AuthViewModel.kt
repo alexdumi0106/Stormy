@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.weathersimulator.domain.model.User
 import com.example.weathersimulator.domain.usecase.LoginUserUseCase
 import com.example.weathersimulator.domain.usecase.RegisterUserUseCase
+import com.example.weathersimulator.domain.usecase.ResetPasswordUseCase
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +36,7 @@ class AuthViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     private val loginUserUseCase: LoginUserUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
+    private val resetPasswordUseCase: ResetPasswordUseCase,
     private val userRepository: com.example.weathersimulator.data.repository.UserRepository
 
 ) : ViewModel() {
@@ -207,20 +209,22 @@ class AuthViewModel @Inject constructor(
             success = false
         )
 
-        auth.sendPasswordResetEmail(email)
-            .addOnSuccessListener {
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    success = true,
-                    error = null
-                )
-            }
-            .addOnFailureListener { e ->
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    error = e.message ?: "Eroare la resetarea parolei"
-                )
-            }
+        viewModelScope.launch {
+            resetPasswordUseCase(email)
+                .onSuccess {
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        success = true,
+                        error = null
+                    )
+                }
+                .onFailure { e ->
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        error = e.message ?: "Eroare la resetarea parolei"
+                    )
+                }
+        }
     }
 
     fun loadCurrentUser() {

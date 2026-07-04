@@ -92,6 +92,15 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun resetPassword(email: String): Result<Unit> {
+        return try {
+            auth.sendPasswordResetEmail(email).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun getLocalUser(uid: String): User? {
         val entity = userDao.getUserByUid(uid) ?: return null
         return User(

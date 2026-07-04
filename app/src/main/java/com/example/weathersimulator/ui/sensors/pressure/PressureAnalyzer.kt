@@ -3,19 +3,17 @@ package com.example.weathersimulator.sensors.pressure
 import kotlin.math.abs
 
 class PressureAnalyzer(
-    private val smoothWindow: Int = 10,            // ultimele 10 citiri (ex 10-20 sec)
-    private val trendWindowMs: Long = 15 * 60_000L  // 15 min (poți face 30/60)
+    private val smoothWindow: Int = 10,            // ultimele 10 citiri
+    private val trendWindowMs: Long = 15 * 60_000L  // 15 min
 ) {
     private val smoothBuffer = ArrayDeque<Float>()
     private val samples = ArrayDeque<Pair<Long, Float>>() // (timestampMs, smoothedHpa)
 
     fun addSample(rawHpa: Float, nowMs: Long): Result {
-        // 1) smoothing
         smoothBuffer.addLast(rawHpa)
         if (smoothBuffer.size > smoothWindow) smoothBuffer.removeFirst()
         val smoothed = smoothBuffer.average().toFloat()
 
-        // 2) păstrăm doar fereastra de trend
         samples.addLast(nowMs to smoothed)
         val cutoff = nowMs - trendWindowMs
         while (samples.isNotEmpty() && samples.first().first < cutoff) {
@@ -40,7 +38,6 @@ class PressureAnalyzer(
     private fun classify(trendHpaPerHour: Float?): PressureTrend {
         if (trendHpaPerHour == null) return PressureTrend.UNKNOWN
 
-        // praguri simple (poți ajusta)
         return when {
             trendHpaPerHour <= -3.0f -> PressureTrend.RAPID_FALL
             trendHpaPerHour < -1.0f  -> PressureTrend.FALLING

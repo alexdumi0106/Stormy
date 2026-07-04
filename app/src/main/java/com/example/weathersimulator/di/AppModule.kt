@@ -8,6 +8,7 @@ import com.example.weathersimulator.data.local.weather.WeatherCsvReader
 import com.example.weathersimulator.data.repository.UserRepository
 import com.example.weathersimulator.domain.usecase.LoginUserUseCase
 import com.example.weathersimulator.domain.usecase.RegisterUserUseCase
+import com.example.weathersimulator.domain.usecase.ResetPasswordUseCase
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
@@ -69,6 +70,11 @@ object AppModule {
     fun provideRegisterUserUseCase(
         repo: UserRepository
     ): RegisterUserUseCase = RegisterUserUseCase(repo)
+
+    @Provides
+    fun provideResetPasswordUseCase(
+        repo: UserRepository
+    ): ResetPasswordUseCase = ResetPasswordUseCase(repo)
 
     @Provides
     fun provideAiMessageDao(db: WeatherSimulatorDatabase): AiMessageDao {

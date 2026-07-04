@@ -34,7 +34,6 @@ fun WeatherDetailsGrid(
 
     val current = data.current ?: return
 
-    // Calculate sunrise and sunset for local timezone and current date.
     val calendar = Calendar.getInstance()
 
     val sunriseStr = data.daily?.sunrise
@@ -53,7 +52,6 @@ fun WeatherDetailsGrid(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Row 1: Temperatura resimțită și Răsărit/Apus
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -73,7 +71,6 @@ fun WeatherDetailsGrid(
             )
         }
 
-        // Row 2: Precipitații și Umiditate
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -93,7 +90,6 @@ fun WeatherDetailsGrid(
             )
         }
 
-        // Row 3: Faza lunii și Presiune atmosferică
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)

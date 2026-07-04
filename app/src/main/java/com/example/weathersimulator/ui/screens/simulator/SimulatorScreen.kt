@@ -169,14 +169,11 @@ fun SimulatorScreen(
         pressureViewModel.start()
     }
 
-    // pragul de vant puternic (km/h)
     val strongWindThreshold = 50f
 
-    // pentru a porni/opri sunetele de fundal
     var soundsEnabled by remember { mutableStateOf(true) }
     var useBarometer by remember { mutableStateOf(true) }
 
-    // derivăm condiția meteo din valorile actuale
     val (_, descriptionNow) = remember(temperature, humidity, pressure, wind, cloudCoverage) {
         computeWeatherDescription(temperature, humidity, pressure, wind, cloudCoverage)
     }
@@ -187,7 +184,6 @@ fun SimulatorScreen(
         }
     }
 
-    // Vant
     LaunchedEffect(wind, soundsEnabled, descriptionNow) {
         if (!soundsEnabled) {
             audio.stopWind()
@@ -211,8 +207,7 @@ fun SimulatorScreen(
         }
     }
 
-    // Ploaie (loop) când sunt condiții de ploaie
-    // Ploaie continuă când sunt condiții de ploaie SAU furtună
+    
     LaunchedEffect(descriptionNow, soundsEnabled) {
         if (!soundsEnabled) {
             audio.stopRain()
@@ -229,8 +224,7 @@ fun SimulatorScreen(
         }
     }
 
-    // Tunet, cand sunt conditii de furtuna
-    //R = ID-ul intern Android pentru fișierul thunder.mp3 din res/raw
+    
     LaunchedEffect(descriptionNow, soundsEnabled) {
         val isStorm = isStormWeatherDescription(descriptionNow)
 
@@ -247,7 +241,6 @@ fun SimulatorScreen(
     }
 
 
-    // 3) Cleanup când ieși din ecran
     DisposableEffect(Unit) {
         onDispose {
             audio.releaseAll()
@@ -256,7 +249,7 @@ fun SimulatorScreen(
 
     LaunchedEffect(soundsEnabled) {
         if (!soundsEnabled) {
-            audio.releaseAll() // oprește tot (wind + rain + thunder)
+            audio.releaseAll()
         }
     }
 
@@ -326,7 +319,6 @@ fun SimulatorScreen(
                 .fillMaxSize()
                 .background(backgroundColor)
         ) {
-            // 1) FUNDAL ANIMAT (spate)
             WeatherScene(
                 cloudCoverage = cloudCoverage,
                 isStormy = isStormWeatherDescription(descriptionNow),
@@ -649,16 +641,15 @@ fun WeatherDisplayCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(220.dp)
-            .padding(bottom = 16.dp) // Adăugăm puțin spațiu jos față de marginea ecranului
+            .padding(bottom = 16.dp) 
             .clip(RoundedCornerShape(28.dp))
             .border(
                 width = 1.dp, 
-                color = Color.White.copy(alpha = 0.35f), // Contur mai opac/pronunțat
+                color = Color.White.copy(alpha = 0.35f), 
                 shape = RoundedCornerShape(28.dp)
             ),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
-            // Am crescut alpha la 0.25f pentru a face culoarea mai închisă/densă
             containerColor = Color.White.copy(alpha = 0.18f) 
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -1085,7 +1076,6 @@ fun AnimatedSky(
             )
         }
 
-        // 🌞 Sun (sus-stânga) cu glow
         if (sunAlpha > 0.02f) {
             val center = Offset(
                 x = w * (0.18f + sunDrift),
@@ -1102,7 +1092,6 @@ fun AnimatedSky(
             )
         }
 
-        // Cloud layout is tuned per weather type to match visual references.
         if (cloudsAlpha > 0.02f) {
             fun wrap01(value: Float): Float {
                 val wrapped = value % 1f
